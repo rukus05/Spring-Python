@@ -122,12 +122,14 @@ def main():
             #"""
             for key in revenue_dict:
                     
-                if (row['PL Category'] == key):
+                if (row['PL Category'] == key) and (row['Loc Code Dimension'] == l):
                     r = row['Amount']
-                    print(f'Key is {key} and amount is {r}.')
-                    print(f'Revenue Dict before is {revenue_dict[key][m-1]}.')
+                    
+                    #print(f'Revenue Dict before is {revenue_dict[key][m-1]}.')
                     revenue_dict[key][m-1] = revenue_dict[key][m-1] + r
-                    print(f'Revenue Dict after is {revenue_dict[key][m-1]}.')
+                    #print(f'Revenue Dict after is {revenue_dict[key][m-1]}.')
+                    if key == 'Self-pay revenue':
+                        print(f'For {l}, the Key is {key}, month is {m} and amount is {r}.')
                 #elif x == 'Medication':
                 #    print(x)
                 #    revenue_dict[x][m-1] = revenue_dict[row['PL Category']][m-1] + row['Amount']
