@@ -10,15 +10,15 @@ import PySimpleGUI as sg
 
 def main(): 
     
-    """
+    
     mos = int(input("How many months are you running this report for? "))
     
-    """
+    
     
     #########
     # Delete this after troubleshooting
     #########
-    mos = 4
+    #mos = 4
     #moslist = [0] * (mos + 1)
     #########
 
@@ -36,18 +36,18 @@ def main():
     oe_dict={}
     #oe_dict['TOTAL OPERATING EXPENSES'] = [0] * mos
     TOE= []
-    nonOI = {}
+    nonOI_dict = {}
     TNOE = []
     NI = []
     EBITDA = []
     
     ##
     # Undo after troubleshooting
-    #f = FilePrompt()
-    #df_spring = pd.read_excel(f)
+    f = FilePrompt()
+    df_spring = pd.read_excel(f)
     ##
 
-    df_spring = pd.read_excel('RawData_FS.xlsx')
+    #df_spring = pd.read_excel('RawData_FS.xlsx')
 
     
     
@@ -84,34 +84,34 @@ def main():
         revenue_dict['Nest'] = [0] * (mos + 1)
         revenue_dict['Other Revenue'] = [0] * (mos + 1)
         #print(revenue_dict)
-        COGS_dict['MD Payroll'] = [0] * (mos + 1)
-        COGS_dict['Clinical Payroll'] = [0] * (mos + 1)
-        COGS_dict['Lab Payroll'] = [0] * (mos + 1)
-        COGS_dict['ASC Payroll'] = [0] * (mos + 1)
+        COGS_dict['MD payroll'] = [0] * (mos + 1)
+        COGS_dict['Clinical payroll'] = [0] * (mos + 1)
+        COGS_dict['Lab payroll'] = [0] * (mos + 1)
+        COGS_dict['ASC payroll'] = [0] * (mos + 1)
         COGS_dict['Supplies'] = [0] * (mos + 1)
         COGS_dict['Medication'] = [0] * (mos + 1)
-        COGS_dict['Medical Services'] = [0] * (mos + 1)
+        COGS_dict['Medical services'] = [0] * (mos + 1)
         
         oe_dict['Payroll'] = [0] * (mos + 1)
         oe_dict['Marketing'] = [0] * (mos + 1)
-        oe_dict['Professional Fees'] = [0] * (mos + 1)
+        oe_dict['Professional fees'] = [0] * (mos + 1)
         oe_dict['Rent'] = [0] * (mos + 1)
         oe_dict['Facilities'] = [0] * (mos + 1)
         oe_dict['Travel'] = [0] * (mos + 1)
         oe_dict['Facilities'] = [0] * (mos + 1)
-        oe_dict['Employee Related Expenses'] = [0] * (mos + 1)
-        oe_dict['Travel & Reguatory'] = [0] * (mos + 1)
-        oe_dict['Bank Charges'] = [0] * (mos + 1)
+        oe_dict['Employee related expenses'] = [0] * (mos + 1)
+        oe_dict['Taxes & Regulatory'] = [0] * (mos + 1)
+        oe_dict['Bank charges'] = [0] * (mos + 1)
         oe_dict['Other'] = [0] * (mos + 1)
 
         
-        nonOI['Auto Lease related expenses'] = [0] * (mos + 1)
-        nonOI['Other Income'] = [0] * (mos + 1)
-        nonOI['Interest Income'] = [0] * (mos + 1)
-        nonOI['Non-operating income/(expense)'] = [0] * (mos + 1)
+        #nonOI_dict['Auto Lease related expenses'] = [0] * (mos + 1)
+        #nonOI_dict['Other Income'] = [0] * (mos + 1)
+        #nonOI_dict['Interest Income'] = [0] * (mos + 1)
+        nonOI_dict['Non-operating income/(expense)'] = [0] * (mos + 1)
 
         #print(df_Output)
-        print(revenue_dict)
+        #print(revenue_dict)
         for index, row in df_spring.iterrows():
             x = str(row['PL Category'])
             m = int(row['Posting Date'])
@@ -128,39 +128,72 @@ def main():
                     #print(f'Revenue Dict before is {revenue_dict[key][m-1]}.')
                     revenue_dict[key][m-1] = revenue_dict[key][m-1] + r
                     #print(f'Revenue Dict after is {revenue_dict[key][m-1]}.')
-                    if key == 'Self-pay revenue':
-                        print(f'For {l}, the Key is {key}, month is {m} and amount is {r}.')
+                    ##  The next 2 lines were used for troubleshooting!
+                    #if key == 'Self-pay revenue':
+                    #    print(f'For {l}, the Key is {key}, month is {m} and amount is {r}.')
                 #elif x == 'Medication':
                 #    print(x)
                 #    revenue_dict[x][m-1] = revenue_dict[row['PL Category']][m-1] + row['Amount']
             #"""
-        print('The revenue dict for all is:')   
-        print(revenue_dict)
-        """
-        for key in revenue_dict:
-            for m in revenue_dict[key]:
-                print(str(key) + ' ' + str(m))
-        """
+        #print('The revenue dict for all is:')   
+        #print(revenue_dict)
+
+            for key in COGS_dict:
+                if (row['PL Category'] == key) and (row['Loc Code Dimension'] == l):
+                    r = row['Amount']
+                    COGS_dict[key][m-1] = COGS_dict[key][m-1] + r
+            for key in oe_dict:
+                if (row['PL Category'] == key) and (row['Loc Code Dimension'] == l):
+                    r = row['Amount']
+                    oe_dict[key][m-1] = oe_dict[key][m-1] + r
+
+            for key in nonOI_dict:
+                if (row['PL Category'] == key) and (row['Loc Code Dimension'] == l):
+                    r = row['Amount']
+                    nonOI_dict[key][m-1] = nonOI_dict[key][m-1] + r
+
+
+        df_Output.loc[len(df_Output.index)] = 'Revenue'
         for key in revenue_dict:
             rowlist = [key]
-            #print(key)
+            tot = sum(revenue_dict[key])
+            revenue_dict[key][mos] = tot
             for m in revenue_dict[key]:
                 rowlist.append(m)
-            #print(rowlist)
             df_Output.loc[len(df_Output.index)] = rowlist
-            #print(df_Output)
-        #df_Output.append(rowlist, ignore_index=True)
-#pd.DataFrame(list(my_dict.items()),columns = ['Products','Prices'])
+
+        df_Output.loc[len(df_Output.index)] = 'COGS'
+        for key in COGS_dict:
+            rowlist = [key]
+            tot = sum(COGS_dict[key])
+            COGS_dict[key][mos] = tot
+            for m in COGS_dict[key]:
+                rowlist.append(m)
+            df_Output.loc[len(df_Output.index)] = rowlist
+
+        df_Output.loc[len(df_Output.index)] = 'OpEx'
+        for key in oe_dict:
+            rowlist = [key]
+            tot = sum(oe_dict[key])
+            oe_dict[key][mos] = tot
+            for m in oe_dict[key]:
+                rowlist.append(m)
+            df_Output.loc[len(df_Output.index)] = rowlist
+        df_Output.loc[len(df_Output.index)] = 'Non OpEx'
+        for key in nonOI_dict:
+            rowlist = [key]
+            tot = sum(nonOI_dict[key])
+            nonOI_dict[key][mos] = tot
+            for m in nonOI_dict[key]:
+                rowlist.append(m)
+            df_Output.loc[len(df_Output.index)] = rowlist
+           
+
         df_Output.to_excel(nm, index = False)              
     #print(revenue_dict)
 
     
     
-    
-    """
-    df['date'] = pd.to_datetime(df['date'])
-    df[df['date'].dt.month > 2]
-    """
 
 def FilePrompt():
     root = tk.Tk()
