@@ -162,6 +162,8 @@ def main():
                 rowlist.append(m)
             df_Output.loc[len(df_Output.index)] = rowlist
 
+        
+
         df_Output.loc[len(df_Output.index)] = 'COGS'
         for key in COGS_dict:
             rowlist = [key]
@@ -188,12 +190,35 @@ def main():
                 rowlist.append(m)
             df_Output.loc[len(df_Output.index)] = rowlist
            
+        if l == 'DAN':
+            DAN_df = df_Output.copy()
+        elif l == 'HQ':
+            HQ_df = df_Output.copy()
+        elif l == 'nan':
+            nan_df = df_Output.copy()
+        elif l == 'NYC':
+            NYC_df = df_Output.copy()
+        elif l == 'OAK':
+            OAK_df = df_Output.copy()
+        elif l == 'RMT':
+            RMT_df = df_Output.copy()
+        elif l == 'RWC':
+            RWC_df = df_Output.copy()
+        elif l == 'SF':
+            SF_df = df_Output.copy()
+        elif l == 'SOMA':
+            SOMA_df = df_Output.copy()
+        elif l == 'SV':
+            SV_df = df_Output.copy()
+        elif l == 'VAN':
+            VAN_df = df_Output.copy()
 
         df_Output.to_excel(nm, index = False)              
     #print(revenue_dict)
-
-    
-    
+    # removed nan_df for testing
+    df_consolidated = pd.concat([DAN_df, HQ_df, NYC_df, OAK_df, RMT_df, RWC_df, SF_df, SOMA_df, SV_df, VAN_df])
+    df_consolidated.to_excel('ALL_Sites.xlsx', index= False)
+    print(df_consolidated)
 
 def FilePrompt():
     root = tk.Tk()
