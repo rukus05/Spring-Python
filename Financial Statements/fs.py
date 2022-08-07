@@ -162,7 +162,7 @@ def main():
             for k in revenue_dict:
                 t = revenue_dict[k][c] + t
             TR.append(t)
-        print(TR)
+        #print(TR)
         df_Output.loc[len(df_Output.index)] = TR
         
         # Add a row to indicate state of COGS section of Financial statement
@@ -192,6 +192,15 @@ def main():
             for m in oe_dict[key]:
                 rowlist.append(m)
             df_Output.loc[len(df_Output.index)] = rowlist
+        # Calculate Total OpEx (Vertically) and add to DataFrame
+        for c in range(mos + 1):
+            t = 0
+            for k in oe_dict:
+                t = oe_dict[k][c] + t
+            TOE.append(t)
+        #print(TR)
+        df_Output.loc[len(df_Output.index)] = TOE
+        
         df_Output.loc[len(df_Output.index)] = 'Non OpEx'
         for key in nonOI_dict:
             rowlist = [key]
@@ -200,7 +209,15 @@ def main():
             for m in nonOI_dict[key]:
                 rowlist.append(m)
             df_Output.loc[len(df_Output.index)] = rowlist
-           
+        # Calculate Total COGS (Vertically) and add to DataFrame
+        for c in range(mos + 1):
+            t = 0
+            for k in nonOI_dict:
+                t = nonOI_dict[k][c] + t
+            TNOE.append(t)
+        #print(TR)
+        df_Output.loc[len(df_Output.index)] = TNOE
+
         if l == 'DAN':
             DAN_df = df_Output.copy()
         elif l == 'HQ':
