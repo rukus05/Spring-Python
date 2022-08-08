@@ -12,6 +12,10 @@ from tkinter.filedialog import asksaveasfile
 import PySimpleGUI as sg
 
 
+## Allocations.py runs first.
+## CreatePivot.py runs second.
+## To generate the PAYROLL, run this File first.  Execute the Allocations.bat file.
+## The output created from this file is ingested into the CreatePivot.py file.
 def main(): 
     
     # Prompt user for the Raw data
