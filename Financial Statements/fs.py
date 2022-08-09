@@ -36,6 +36,7 @@ def main():
     cs_COGS_dict={}
     cs_oe_dict={}
     cs_nonOI_dict = {}
+    cs_EBITA = {}
     
     
     ##
@@ -79,7 +80,7 @@ def main():
         NI = []
         depreciation = [0] * (mos + 1)
         intexpense = [0] * (mos + 1)
-        EBITDA = []
+        EBITA = []
         # Create name for file to hold location DF export
         dfname = 'df_' + str(l)
         nm = dfname + '.xlsx'
@@ -122,7 +123,7 @@ def main():
         TOE.append('Monthly Total OpEx')
         TNOE.append('Monthly Total Non OpEx')
         NI.append('Monthly Net Income')
-        EBITDA.append('Monthly EBITA')
+        EBITA.append('Monthly EBITA')
         # Initialize Depreciaton and Interest Expense Variables
         
         
@@ -250,8 +251,8 @@ def main():
         # Insert here
         
         for z in range(mos + 1):
-            EBITDA.append(NI[z + 1] + depreciation[z] + intexpense[z])
-        df_Output.loc[len(df_Output.index)] = EBITDA
+            EBITA.append(NI[z + 1] + depreciation[z] + intexpense[z])
+        df_Output.loc[len(df_Output.index)] = EBITA
         
 
         # Copy the DataFrame to the appropriate site dataframe
@@ -314,7 +315,7 @@ def main():
     cs_oe_dict['Bank charges'] = [0] * (mos + 1)
     cs_oe_dict['Other'] = [0] * (mos + 1)
     cs_nonOI_dict['Non-operating income/(expense)'] = [0] * (mos + 1)
-    cs_EBITA = [0] * (mos + 1)
+    cs_EBITA['Monthly EBITA'] = [0] * (mos + 1)
 
     for row in df_consolidated.itertuples(index = False):
         if row[0] in cs_revenue_dict:
@@ -333,6 +334,10 @@ def main():
             b = row[0]
             for a in range(mos + 1):
                 cs_nonOI_dict[b][a] = (cs_nonOI_dict[b][a]) + (row[a + 1])
+        elif row[0] in cs_EBITA:
+            b = row[0]
+            for a in range(mos + 1):
+                cs_EBITA[b][a] = (cs_EBITA[b][a]) + (row[a + 1])
 
     #print(cs_revenue_dict)
     
@@ -345,7 +350,7 @@ def main():
     c_TOE= []
     c_TNOE = []
     c_NI = []
-    c_EBITDA = []
+    #c_EBITDA = []
 
     c_TR.append('Monthly Total Revenue')
     c_TCOGS.append('Monthly Total COGS')
@@ -353,7 +358,7 @@ def main():
     c_TOE.append('Monthly Total OpEx')
     c_TNOE.append('Monthly Total Non OpEx')
     c_NI.append('Monthly Net Income')
-    c_EBITDA.append('Monthly EBITA')
+    #cs_EBITA.append('Monthly EBITA')
     # Add a row to indicate state of Revenue section of Financial statement
     df_cons_Output.loc[len(df_cons_Output.index)] = 'Revenue'
 
@@ -441,9 +446,14 @@ def main():
     # Insert a blank row
     df_cons_Output.loc[len(df_cons_Output.index)] = nan
 
-    for z in range(mos + 1):
-            EBITDA.append(NI[z + 1] + depreciation[z] + intexpense[z])
-        df_Output.loc[len(df_Output.index)] = EBITDA
+    for key2, values in cs_EBITA.items():
+        rowlist2 = [key2]
+        #  Append all values of the dictionary key to the List and insert into the dataframe
+        for v in values:
+            rowlist2.append(v)
+            #print(rowlist2)
+        df_cons_Output.loc[len(df_cons_Output.index)] = rowlist2
+
     #df_cons_Output.to_excel('Cleaned_Consolidated.xlsx', index = False)
 
     # Output Dataframes to Excel    
