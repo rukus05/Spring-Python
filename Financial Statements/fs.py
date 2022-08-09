@@ -1,4 +1,5 @@
 from math import nan
+import time
 import numpy as np
 import xlsxwriter
 from numpy import dtype, float64
@@ -14,7 +15,7 @@ import PySimpleGUI as sg
 
 def main(): 
     
-    
+    start = time.time()
     mos = int(input("How many months are in this report? "))
     
     
@@ -48,14 +49,16 @@ def main():
     
     
     df_spring = df_spring.reset_index()
+    #  Remove spaces from column names so that itertuples() can be employed, vs iterrows()
+    df_spring.columns = df_spring.columns.str.replace(' ','_')
     df_spring['Amount'] = df_spring['Amount'].fillna(0)
     
-    uniquePL = df_spring['PL Category'].unique()
-    uniqueLoc = df_spring['Loc Code Dimension'].unique()
+    uniquePL = df_spring['PL_Category'].unique()
+    uniqueLoc = df_spring['Loc_Code_Dimension'].unique()
     
     
-    df_spring['Posting Date'] = pd.to_datetime(df_spring['Posting Date'])
-    df_spring['Posting Date'] = df_spring['Posting Date'].dt.month
+    df_spring['Posting_Date'] = pd.to_datetime(df_spring['Posting_Date'])
+    df_spring['Posting_Date'] = df_spring['Posting_Date'].dt.month
 
     # Create Header for Columns when DF is exported (Held in cmos variable)
     cmos = ['Account']
@@ -63,6 +66,9 @@ def main():
         cmos.append('Month ' + str(x + 1))
     cmos.append('Total')
     
+    
+
+
     for l in uniqueLoc:
         # Initialize Lists for Totals
         TR = []
@@ -71,6 +77,8 @@ def main():
         TOE= []
         TNOE = []
         NI = []
+        depreciation = [0] * (mos + 1)
+        intexpense = [0] * (mos + 1)
         EBITDA = []
         # Create name for file to hold location DF export
         dfname = 'df_' + str(l)
@@ -115,32 +123,41 @@ def main():
         TNOE.append('Monthly Total Non OpEx')
         NI.append('Monthly Net Income')
         EBITDA.append('Monthly EBITA')
-
+        # Initialize Depreciaton and Interest Expense Variables
+        
+        
         # Iterate through df_spring DF
-        for index, row in df_spring.iterrows():
-            x = str(row['PL Category'])
-            m = int(row['Posting Date'])
+        for row in df_spring.itertuples():
+        # for index, row in df_spring.iterrows():
+            x = str(row.PL_Category)
+            m = int(row.Posting_Date)
             
             # Based on location, add the PL values.
             # A for loop for each section of the finanancial statement (dict)
             for key in revenue_dict:
-                if (row['PL Category'] == key) and (row['Loc Code Dimension'] == l):
-                    r = row['Amount']
+                if (row.PL_Category == key) and (row.Loc_Code_Dimension == l):
+                    r = row.Amount
                     revenue_dict[key][m-1] = revenue_dict[key][m-1] + r
             for key in COGS_dict:
-                if (row['PL Category'] == key) and (row['Loc Code Dimension'] == l):
-                    r = row['Amount']
+                if (row.PL_Category == key) and (row.Loc_Code_Dimension == l):
+                    r = row.Amount
                     COGS_dict[key][m-1] = COGS_dict[key][m-1] + r
             for key in oe_dict:
-                if (row['PL Category'] == key) and (row['Loc Code Dimension'] == l):
-                    r = row['Amount']
+                if (row.PL_Category == key) and (row.Loc_Code_Dimension == l):
+                    r = row.Amount
                     oe_dict[key][m-1] = oe_dict[key][m-1] + r
 
             for key in nonOI_dict:
-                if (row['PL Category'] == key) and (row['Loc Code Dimension'] == l):
-                    r = row['Amount']
+                if (row.PL_Category == key) and (row.Loc_Code_Dimension == l):
+                    r = row.Amount
                     nonOI_dict[key][m-1] = nonOI_dict[key][m-1] + r
-        
+
+            if (row.Loc_Code_Dimension == l) and (row.GL_Account == '71140Depreciation'):
+                depreciation[m-1] = depreciation[m-1] + row.Amount
+            
+            if (row.Loc_Code_Dimension == l) and (row.GL_Account == '71130Interest expense'):
+                intexpense[m-1] = intexpense[m-1] + row.Amount
+
         # Insert a blank row
         df_Output.loc[len(df_Output.index)] = nan
         # Add a row to indicate state of Revenue section of Financial statement
@@ -157,12 +174,7 @@ def main():
                 rowlist.append(m)
             df_Output.loc[len(df_Output.index)] = rowlist
         # Calculate Total Revenue (Vertically) and add to DataFrame
-        for c in range(mos + 1):
-            t = 0
-            for k in revenue_dict:
-                t = revenue_dict[k][c] + t
-            TR.append(t)
-        #print(TR)
+        TR = MonthlyTotals(revenue_dict, mos, TR)
         df_Output.loc[len(df_Output.index)] = TR
         
         # Insert a blank row
@@ -170,6 +182,7 @@ def main():
 
         # Add a row to indicate state of COGS section of Financial statement
         df_Output.loc[len(df_Output.index)] = 'COGS'
+        
         for key in COGS_dict:
             rowlist = [key]
             tot = sum(COGS_dict[key])
@@ -178,13 +191,9 @@ def main():
                 rowlist.append(m)
             df_Output.loc[len(df_Output.index)] = rowlist
         # Calculate Total COGS (Vertically) and add to DataFrame
-        for c in range(mos + 1):
-            t = 0
-            for k in COGS_dict:
-                t = COGS_dict[k][c] + t
-            TCOGS.append(t)
-        #print(TR)
+        TCOGS = MonthlyTotals(COGS_dict, mos, TCOGS)
         df_Output.loc[len(df_Output.index)] = TCOGS
+
         # Insert a blank row
         df_Output.loc[len(df_Output.index)] = nan
         # Calculate Gross Margin and Add to DF
@@ -206,12 +215,8 @@ def main():
                 rowlist.append(m)
             df_Output.loc[len(df_Output.index)] = rowlist
         # Calculate Total OpEx (Vertically) and add to DataFrame
-        for c in range(mos + 1):
-            t = 0
-            for k in oe_dict:
-                t = oe_dict[k][c] + t
-            TOE.append(t)
-        #print(TR)
+       
+        TOE = MonthlyTotals(oe_dict, mos, TOE)
         df_Output.loc[len(df_Output.index)] = TOE
         
         # Insert a blank row
@@ -226,12 +231,8 @@ def main():
                 rowlist.append(m)
             df_Output.loc[len(df_Output.index)] = rowlist
         # Calculate Total COGS (Vertically) and add to DataFrame
-        for c in range(mos + 1):
-            t = 0
-            for k in nonOI_dict:
-                t = nonOI_dict[k][c] + t
-            TNOE.append(t)
-        #print(TR)
+        
+        TNOE = MonthlyTotals(nonOI_dict, mos, TNOE)
         df_Output.loc[len(df_Output.index)] = TNOE
 
         # Insert a blank row
@@ -247,10 +248,10 @@ def main():
 
         # Calculate EBITDA and Add to DF
         # Insert here
-        #
-        #for z in range(mos + 1):
-        #    EBITDA.append(NI[z + 1] - TOE[z + 1] + TNOE[z + 1])
-        #df_Output.loc[len(df_Output.index)] = NI
+        
+        for z in range(mos + 1):
+            EBITDA.append(NI[z + 1] + depreciation[z] + intexpense[z])
+        df_Output.loc[len(df_Output.index)] = EBITDA
         
 
         # Copy the DataFrame to the appropriate site dataframe
@@ -313,6 +314,7 @@ def main():
     cs_oe_dict['Bank charges'] = [0] * (mos + 1)
     cs_oe_dict['Other'] = [0] * (mos + 1)
     cs_nonOI_dict['Non-operating income/(expense)'] = [0] * (mos + 1)
+    cs_EBITA = [0] * (mos + 1)
 
     for row in df_consolidated.itertuples(index = False):
         if row[0] in cs_revenue_dict:
@@ -336,8 +338,24 @@ def main():
     
     # Create new DF to hold cleaned dataframe
     df_cons_Output = pd.DataFrame(columns= cmos)
-    print(df_cons_Output)
-    print(cs_revenue_dict)
+    
+    c_TR = []
+    c_TCOGS = []
+    c_GM = []
+    c_TOE= []
+    c_TNOE = []
+    c_NI = []
+    c_EBITDA = []
+
+    c_TR.append('Monthly Total Revenue')
+    c_TCOGS.append('Monthly Total COGS')
+    c_GM.append('Monthly GROSS MARGIN')
+    c_TOE.append('Monthly Total OpEx')
+    c_TNOE.append('Monthly Total Non OpEx')
+    c_NI.append('Monthly Net Income')
+    c_EBITDA.append('Monthly EBITA')
+    # Add a row to indicate state of Revenue section of Financial statement
+    df_cons_Output.loc[len(df_cons_Output.index)] = 'Revenue'
 
     # Place Consolidate Revenue Account info into DF
     for key2, values in cs_revenue_dict.items():
@@ -348,6 +366,15 @@ def main():
             #print(rowlist2)
         df_cons_Output.loc[len(df_cons_Output.index)] = rowlist2
     
+    # Calculate Total Revenue (Vertically) and add to DataFrame
+    
+    c_TR = MonthlyTotals(cs_revenue_dict, mos, c_TR)
+    df_cons_Output.loc[len(df_cons_Output.index)] = c_TR
+
+    # Insert a blank row
+    df_cons_Output.loc[len(df_cons_Output.index)] = nan
+
+    df_cons_Output.loc[len(df_cons_Output.index)] = 'COGS'
     for key2, values in cs_COGS_dict.items():
         rowlist2 = [key2]
         #  Append all values of the dictionary key to the List and insert into the dataframe
@@ -355,6 +382,25 @@ def main():
             rowlist2.append(v)
             #print(rowlist2)
         df_cons_Output.loc[len(df_cons_Output.index)] = rowlist2
+
+    # Calculate Total COGS (Vertically) and add to DataFrame
+    
+    c_TCOGS = MonthlyTotals(cs_COGS_dict, mos, c_TCOGS)
+    df_cons_Output.loc[len(df_cons_Output.index)] = c_TCOGS
+
+    # Insert a blank row
+    df_cons_Output.loc[len(df_cons_Output.index)] = nan
+
+    # Calculate Gross Margin and Add to DF
+    # GM.append('GROSS MARGIN')
+    for z in range(mos + 1):
+        c_GM.append(c_TR[z + 1] - c_TCOGS[z + 1])
+    df_cons_Output.loc[len(df_cons_Output.index)] = c_GM
+    
+    # Insert a blank row
+    df_Output.loc[len(df_Output.index)] = nan
+
+    df_cons_Output.loc[len(df_cons_Output.index)] = 'OpEx'
 
     for key2, values in cs_oe_dict.items():
         rowlist2 = [key2]
@@ -364,6 +410,14 @@ def main():
             #print(rowlist2)
         df_cons_Output.loc[len(df_cons_Output.index)] = rowlist2
     
+    # Calculate Total Monthly OpEx (Vertically) and add to DataFrame
+    c_TOE = MonthlyTotals(cs_oe_dict, mos, c_TOE)
+    df_cons_Output.loc[len(df_cons_Output.index)] = c_TOE
+
+    # Insert a blank row
+    df_cons_Output.loc[len(df_cons_Output.index)] = nan
+
+    df_cons_Output.loc[len(df_cons_Output.index)] = 'Non OpEx'
     for key2, values in cs_nonOI_dict.items():
         rowlist2 = [key2]
         #  Append all values of the dictionary key to the List and insert into the dataframe
@@ -371,15 +425,30 @@ def main():
             rowlist2.append(v)
             #print(rowlist2)
         df_cons_Output.loc[len(df_cons_Output.index)] = rowlist2
-        
-    df_cons_Output.to_excel('Cleaned_Consolidated.xlsx', index = False)
-        
 
-    
+    # Calculate Total Monthly Non OpEx (Vertically) and add to DataFrame
+    c_TNOE = MonthlyTotals(cs_nonOI_dict, mos, c_TNOE)
+    df_cons_Output.loc[len(df_cons_Output.index)] = c_TNOE
 
+    # Insert a blank row
+    df_cons_Output.loc[len(df_cons_Output.index)] = nan
 
+    # Calculate Net Income and Add to DF
+    for z in range(mos + 1):
+        c_NI.append(c_GM[z + 1] - c_TOE[z + 1] + c_TNOE[z + 1])
+    df_cons_Output.loc[len(df_cons_Output.index)] = c_NI
+
+    # Insert a blank row
+    df_cons_Output.loc[len(df_cons_Output.index)] = nan
+
+    for z in range(mos + 1):
+            EBITDA.append(NI[z + 1] + depreciation[z] + intexpense[z])
+        df_Output.loc[len(df_Output.index)] = EBITDA
+    #df_cons_Output.to_excel('Cleaned_Consolidated.xlsx', index = False)
+
+    # Output Dataframes to Excel    
     with pd.ExcelWriter('Consolidated Financials.xlsx', engine = 'xlsxwriter') as writer:
-        df_consolidated.to_excel(writer, sheet_name='Consolidated', index = False)
+        df_cons_Output.to_excel(writer, sheet_name='Consolidated', index = False)
         DAN_df.to_excel(writer, sheet_name='DAN', index = False)
         HQ_df.to_excel(writer, sheet_name='HQ', index = False)
         NYC_df.to_excel(writer, sheet_name='NYC', index = False)
@@ -391,6 +460,8 @@ def main():
         SV_df.to_excel(writer, sheet_name='SV', index = False)
         VAN_df.to_excel(writer, sheet_name='VAN', index = False)
     #df_consolidated.to_excel('ALL_Sites.xlsx', index = False)
+    end = time.time()
+    print("The time for this script is:", end-start)
     print('#######')
     print('The Financial Statements have been processed in file "Consolidated Fincancials.xlsx."')
     print('#######')
@@ -408,6 +479,18 @@ def FilePrompt():
     filename = fd.askopenfilename()
 
     return filename
+
+def MonthlyTotals(sec_dict, mos, c_T):
+
+    for c in range(mos + 1):
+        t = 0
+        for k in sec_dict:
+            t = sec_dict[k][c] + t
+        c_T.append(t)
+    return c_T
+    
+
+
 """
 def PLtoDF(pl_df, months, df_Out):
     print(df_Out)
