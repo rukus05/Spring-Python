@@ -1,6 +1,7 @@
 
 
 from msilib.schema import File
+import time
 import pandas as pd
 import openpyxl
 import datetime
@@ -18,6 +19,7 @@ import PySimpleGUI as sg
 ## The output created from this file is ingested into the CreatePivot.py file.
 def main(): 
     
+    start = time.time()
     # Prompt user for the Raw data
 
     f = FilePrompt()
@@ -366,6 +368,10 @@ def main():
     inp = input("Please type name of file for Output:")
     des = str(inp + '.xlsx')
     df_concatenated.to_excel(des, index = False)
+
+    runningtime = time.time() - start
+    print("The time for this script is:", runningtime)
+
     
     
 

@@ -2,6 +2,7 @@
 
 from msilib.schema import File
 import pandas as pd
+import time
 import openpyxl
 import datetime
 import tkinter as tk
@@ -14,6 +15,7 @@ import PySimpleGUI as sg
 
 def main(): 
     
+    start = time.time()
     # Prompt user for the file produced from the Allocations.py script
     f = FilePrompt()
     df_spring = pd.read_excel(f)
@@ -156,6 +158,9 @@ def main():
     op = input("Please type name of file for Output:")
     output = str(op + '.xlsx')
     df_Output.to_excel(output, index = False)
+
+    runningtime = time.time() - start
+    print("The time for this script is:", runningtime)
 
         
 def FilePrompt():
