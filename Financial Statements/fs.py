@@ -80,6 +80,8 @@ def main():
         NI = []
         depreciation = [0] * (mos + 1)
         intexpense = [0] * (mos + 1)
+        sttax  = [0] * (mos + 1)
+        fedtax = [0] * (mos + 1)
         EBITA = []
         # Create name for file to hold location DF export
         dfname = 'df_' + str(l)
@@ -158,7 +160,12 @@ def main():
             
             if (row.Loc_Code_Dimension == l) and (row.GL_Account == '71130Interest expense'):
                 intexpense[m-1] = intexpense[m-1] + row.Amount
-
+            
+            if (row.Loc_Code_Dimension == l) and (row.GL_Account == '68110State and local taxes'):
+                sttax[m-1] = sttax[m-1] + row.Amount
+            if (row.Loc_Code_Dimension == l) and (row.GL_Account == '68120Federal taxes'):
+                fedtax[m-1] = fedtax[m-1] + row.Amount
+ 
         # Insert a blank row
         df_Output.loc[len(df_Output.index)] = nan
         # Add a row to indicate state of Revenue section of Financial statement
@@ -251,7 +258,7 @@ def main():
         # Insert here
         
         for z in range(mos + 1):
-            EBITA.append(NI[z + 1] + depreciation[z] + intexpense[z])
+            EBITA.append(NI[z + 1] + depreciation[z] + intexpense[z] + sttax[z] + fedtax[z])
         df_Output.loc[len(df_Output.index)] = EBITA
         
 
