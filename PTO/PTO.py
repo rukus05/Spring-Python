@@ -1,6 +1,7 @@
 
 
 import pandas as pd
+import time
 import openpyxl
 import datetime
 import tkinter as tk
@@ -12,6 +13,7 @@ from tkinter.filedialog import asksaveasfile
 
 def main(): 
     
+    start = time.time()
     # For this program to work properly, the CoA_Pandas.py file needs to be in the same directory as the RawData.xlsx file.
     # Read in Data from the "RawData.xlsx" file.
     f = FilePrompt()
@@ -47,7 +49,7 @@ def main():
                 Accrual_Sum = 0
                                 
                 # Loop through rows of the Raw Data file.
-                for index, row in df_spring.iterrows():
+                for row in df_spring.iterrows():
                     # These if statements force a match for specific Invoices, Dept Long Desc, Sup Dept, and Locations
                     if (row['SUB_DEPARTMENT'] == i) and (row['LOCATION'] == j) and (row['DEPT CODE'] == k):
                         # Sum up the pertinent columns.

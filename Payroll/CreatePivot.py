@@ -23,6 +23,7 @@ def main():
     
     #print(datetime.datetime.now().strftime('%Y-%m-%d'))
    
+   
     """
     # The below code iterates over a row and gets a particular column's values.
 
@@ -33,27 +34,33 @@ def main():
     """
     df_spring = df_spring.reset_index()
     
+    #  Clean column names so that itertuples() can be employed, instead of iterrows()
+    df_spring.columns = df_spring.columns.str.replace(' ','_')
+    df_spring.columns = df_spring.columns.str.replace('-','')
+    df_spring.columns = df_spring.columns.str.replace('/','')
+    df_spring.columns = df_spring.columns.str.replace('401','FourOhOne')
+
     # Get the unique Invoice Numbers, Locations, Sub Departments, and Department Long Descriptions.  This is needed to loop through and group them properly.
-    uniqueInvoices = df_spring['Invoice Number'].unique()
+    uniqueInvoices = df_spring['Invoice_Number'].unique()
     uniqueLocations = df_spring['LOCATION'].unique()
     uniqueSub_Dept = df_spring['SUB_DEPARTMENT'].unique()
-    unique_DLD = df_spring['Department Long Descr'].unique()
+    unique_DLD = df_spring['Department_Long_Descr'].unique()
     #print(unique_DLD)
     #print(df_spring.info())
     #  It's important to fill in blank cells for the below columns with Zeros.  A blank cell breaks the calculations
     #  The .fillna() method fills blank cells in these columns with 0's.
-    df_spring['Gross Wages'] = df_spring['Gross Wages'].fillna(0)
+    df_spring['Gross_Wages'] = df_spring['Gross_Wages'].fillna(0)
     df_spring['OT'] = df_spring['OT'].fillna(0)
     df_spring['Bonus'] = df_spring['Bonus'].fillna(0)
-    df_spring['Taxes - ER - Totals'] = df_spring['Taxes - ER - Totals'].fillna(0)
-    df_spring['Workers Comp Fee - Totals'] = df_spring['Workers Comp Fee - Totals'].fillna(0)
-    df_spring['401k/Roth-ER'] = df_spring['401k/Roth-ER'].fillna(0)
-    df_spring['BENEFITS wo 401K'] = df_spring['BENEFITS wo 401K'].fillna(0)
-    df_spring['TOTAL FEES'] = df_spring['TOTAL FEES'].fillna(0)
+    df_spring['Taxes__ER__Totals'] = df_spring['Taxes__ER__Totals'].fillna(0)
+    df_spring['Workers_Comp_Fee__Totals'] = df_spring['Workers_Comp_Fee__Totals'].fillna(0)
+    df_spring['FourOhOnekRothER'] = df_spring['FourOhOnekRothER'].fillna(0)
+    df_spring['BENEFITS_wo_FourOhOneK'] = df_spring['BENEFITS_wo_FourOhOneK'].fillna(0)
+    df_spring['TOTAL_FEES'] = df_spring['TOTAL_FEES'].fillna(0)
     df_spring['PTO2'] = df_spring['PTO2'].fillna(0)
-    df_spring['Electronics Nontaxable'] = df_spring['Electronics Nontaxable'].fillna(0)
-    df_spring['Reimbursement-Non Taxable'] = df_spring['Reimbursement-Non Taxable'].fillna(0)
-    df_spring['Total Client Charges'] = df_spring['Total Client Charges'].fillna(0)
+    df_spring['Electronics_Nontaxable'] = df_spring['Electronics_Nontaxable'].fillna(0)
+    df_spring['ReimbursementNon_Taxable'] = df_spring['ReimbursementNon_Taxable'].fillna(0)
+    df_spring['Total_Client_Charges'] = df_spring['Total_Client_Charges'].fillna(0)
     #df_spring['Pay End Date'] = df_spring['Pay End Date']
     
 
@@ -111,25 +118,25 @@ def main():
                     TotClientCharges_Sum = 0
                 
                     # Loop through rows of the Raw Data file.
-                    for index, row in df_spring.iterrows():
+                    for row in df_spring.itertuples():
                         # These if statements force a match for specific Invoices, Dept Long Desc, Sup Dept, and Locations
-                        if (row['Invoice Number'] == i) and (row['Department Long Descr'] == j) and (row['SUB_DEPARTMENT'] == k) and (row['LOCATION'] == l):
+                        if (row.Invoice_Number == i) and (row.Department_Long_Descr == j) and (row.SUB_DEPARTMENT == k) and (row.LOCATION == l):
                             # Sum up the pertinent columns.
-                            GrossWages_Sum = GrossWages_Sum + row['Gross Wages']
-                            OT_Sum = OT_Sum + row['OT']
-                            Bonus_Sum = Bonus_Sum + row['Bonus']
-                            TaxesERTotals_Sum = TaxesERTotals_Sum + row['Taxes - ER - Totals']
-                            WorkersCompFeeTot_Sum = WorkersCompFeeTot_Sum + row['Workers Comp Fee - Totals']
-                            Roth401kCombo_Sum = Roth401kCombo_Sum + row['401k/Roth-ER']
-                            BenWO401k_Sum = BenWO401k_Sum + row['BENEFITS wo 401K']
-                            TotalFees_Sum = TotalFees_Sum + row['TOTAL FEES']
-                            PTO2_Sum = PTO2_Sum + row['PTO2']
-                            ElecNonTax_Sum = ElecNonTax_Sum + row['Electronics Nontaxable']
-                            ReimbNonTax_Sum = ReimbNonTax_Sum + row['Reimbursement-Non Taxable']
-                            TotClientCharges_Sum = TotClientCharges_Sum + row['Total Client Charges']
-                            deptCode = row['DEPT CODE']
-                            ped = row['Pay End Date']
-                            ivd = row['Invoice Date']
+                            GrossWages_Sum = GrossWages_Sum + row.Gross_Wages
+                            OT_Sum = OT_Sum + row.OT
+                            Bonus_Sum = Bonus_Sum + row.Bonus
+                            TaxesERTotals_Sum = TaxesERTotals_Sum + row.Taxes__ER__Totals
+                            WorkersCompFeeTot_Sum = WorkersCompFeeTot_Sum + row.Workers_Comp_Fee__Totals
+                            Roth401kCombo_Sum = Roth401kCombo_Sum + row.FourOhOnekRothER
+                            BenWO401k_Sum = BenWO401k_Sum + row.BENEFITS_wo_FourOhOneK
+                            TotalFees_Sum = TotalFees_Sum + row.TOTAL_FEES
+                            PTO2_Sum = PTO2_Sum + row.PTO2
+                            ElecNonTax_Sum = ElecNonTax_Sum + row.Electronics_Nontaxable
+                            ReimbNonTax_Sum = ReimbNonTax_Sum + row.ReimbursementNon_Taxable
+                            TotClientCharges_Sum = TotClientCharges_Sum + row.Total_Client_Charges
+                            deptCode = row.DEPT_CODE
+                            ped = row.Pay_End_Date
+                            ivd = row.Invoice_Date
 
                     # Create an array holding the Sums for a particular Invoice, DLD, Location, and Sub_Dept        
                     summary = [i, j, k , l, GrossWages_Sum, OT_Sum, Bonus_Sum, TaxesERTotals_Sum, WorkersCompFeeTot_Sum, Roth401kCombo_Sum, BenWO401k_Sum, TotalFees_Sum, PTO2_Sum, ElecNonTax_Sum, ReimbNonTax_Sum, TotClientCharges_Sum]          
@@ -148,12 +155,6 @@ def main():
                     # Add a credit entry to match the above debits.
                     if TotClientCharges_Sum != 0:     
                         df_Output.loc[len(df_Output.index)] = [ "", ped.date(), ivd.date(), "", str(k), 23300, "", str(i) + ' ' + str(j), "", TotClientCharges_Sum , l, deptCode, "", "", ""]
-                    
-                   
-                    # Test Code
-                    #print(row['Invoice Number'], row['Department Long Descr'], row['SUB_DEPARTMENT'], row['LOCATION'], GrossWages_Sum, Roth401kCombo_Sum)
-    
-
     
     op = input("Please type name of file for Output:")
     output = str(op + '.xlsx')
