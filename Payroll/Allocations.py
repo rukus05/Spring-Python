@@ -102,7 +102,8 @@ def main():
 
                 for index, row in df_spring.iterrows():
                     if (row['Invoice Number'] == i) and (row['Department Long Descr'] == j) and (row['SUB_DEPARTMENT'] == k):
-                                        
+                        ## Try using this here:  
+                        ## if row[0] in cs_revenue_dict:
                         for key in exc_Dict:
                             if (row['Employee Name'] == key):
                                 #print(key, " ", i, " ", j, " ", k)
