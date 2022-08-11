@@ -49,7 +49,7 @@ def main():
                 Accrual_Sum = 0
                                 
                 # Loop through rows of the Raw Data file.
-                for row in df_spring.iterrows():
+                for index, row in df_spring.iterrows():
                     # These if statements force a match for specific Invoices, Dept Long Desc, Sup Dept, and Locations
                     if (row['SUB_DEPARTMENT'] == i) and (row['LOCATION'] == j) and (row['DEPT CODE'] == k):
                         # Sum up the pertinent columns.
