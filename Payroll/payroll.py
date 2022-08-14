@@ -439,18 +439,18 @@ def main():
 
         
         if m != 0:
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[4][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), b, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[5][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), c, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[6][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), d, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[7][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), e, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[8][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), f, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[9][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), g, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[10][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), h, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[11][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), i, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[12][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), j, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[13][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), k, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[14][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), l, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], 23300, "", str(name[0]) + ' ' + str(name[1]), "", m, name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[4][CoA_Index], "", str(name[0])[:7] + ' ' + str(name[1]), b, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[5][CoA_Index], "", str(name[0])[:7] + ' ' + str(name[1]), c, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[6][CoA_Index], "", str(name[0])[:7] + ' ' + str(name[1]), d, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[7][CoA_Index], "", str(name[0])[:7] + ' ' + str(name[1]), e, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[8][CoA_Index], "", str(name[0])[:7] + ' ' + str(name[1]), f, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[9][CoA_Index], "", str(name[0])[:7] + ' ' + str(name[1]), g, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[10][CoA_Index], "", str(name[0])[:7] + ' ' + str(name[1]), h, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[11][CoA_Index], "", str(name[0])[:7] + ' ' + str(name[1]), i, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[12][CoA_Index], "", str(name[0])[:7] + ' ' + str(name[1]), j, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[13][CoA_Index], "", str(name[0])[:7] + ' ' + str(name[1]), k, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[14][CoA_Index], "", str(name[0])[:7] + ' ' + str(name[1]), l, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], 23300, "", str(name[0])[:7] + ' ' + str(name[1]), "", m, name[3], dp, "", "", ""]
         
 
     
