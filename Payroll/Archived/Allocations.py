@@ -1,6 +1,7 @@
 
 
 from msilib.schema import File
+import time
 import pandas as pd
 import openpyxl
 import datetime
@@ -18,6 +19,7 @@ import PySimpleGUI as sg
 ## The output created from this file is ingested into the CreatePivot.py file.
 def main(): 
     
+    start = time.time()
     # Prompt user for the Raw data
 
     f = FilePrompt()
@@ -100,7 +102,8 @@ def main():
 
                 for index, row in df_spring.iterrows():
                     if (row['Invoice Number'] == i) and (row['Department Long Descr'] == j) and (row['SUB_DEPARTMENT'] == k):
-                                        
+                        ## Try using this here:  
+                        ## if row[0] in cs_revenue_dict:
                         for key in exc_Dict:
                             if (row['Employee Name'] == key):
                                 #print(key, " ", i, " ", j, " ", k)
@@ -366,6 +369,10 @@ def main():
     inp = input("Please type name of file for Output:")
     des = str(inp + '.xlsx')
     df_concatenated.to_excel(des, index = False)
+
+    runningtime = time.time() - start
+    print("The time for this script is:", runningtime)
+
     
     
 

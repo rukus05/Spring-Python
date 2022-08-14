@@ -477,8 +477,8 @@ def main():
         SV_df.to_excel(writer, sheet_name='SV', index = False)
         VAN_df.to_excel(writer, sheet_name='VAN', index = False)
     #df_consolidated.to_excel('ALL_Sites.xlsx', index = False)
-    end = time.time()
-    print("The time for this script is:", end-start)
+    runningtime = time.time() - start
+    print("The time for this script is:", runningtime)
     print('#######')
     print('The Financial Statements have been processed in file "Consolidated Fincancials.xlsx."')
     print('#######')

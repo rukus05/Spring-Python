@@ -1,6 +1,7 @@
 
 
 import pandas as pd
+import time
 import openpyxl
 import datetime
 import tkinter as tk
@@ -12,6 +13,7 @@ from tkinter.filedialog import asksaveasfile
 
 def main(): 
     
+    start = time.time()
     # For this program to work properly, the CoA_Pandas.py file needs to be in the same directory as the RawData.xlsx file.
     # Read in Data from the "RawData.xlsx" file.
     f = FilePrompt()
