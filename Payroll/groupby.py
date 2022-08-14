@@ -1,5 +1,8 @@
 import pandas as pd
 import re
+
+
+#def main(): 
 df = pd.read_excel("002-allJuly-alloc.xlsx")
 #df.head()
 
@@ -58,13 +61,17 @@ for name, r in df_group:
     k = r['Electronics Nontaxable'].sum()
     l = r['Reimbursement-Non Taxable'].sum()
     m = r['Total Client Charges'].sum()
+
+    """
+    ## Troubleshooting Code ##
     bigsum = b+c+d+e+f+g+h+i+j+k+l
-    if abs(bigsum - m) > 1:
+        if abs(bigsum - m) > 1:
 
         print(r)
         print(a, bigsum, m)
+    """
+
     ped = r['Pay End Date']
-    #pd = str(ped)
     ivd = r['Invoice Date']
     deptCode = r['DEPT CODE']
     dp = re.sub(r"[^0-9]","",str(deptCode)[3:10])
@@ -84,19 +91,6 @@ for name, r in df_group:
         df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[14][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), l, "", name[3], dp, "", "", ""]
         df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], 23300, "", str(name[0]) + ' ' + str(name[1]), "", m, name[3], dp, "", "", ""]
     
-    #print(deptCode)
-    #print(re.sub(r"[^0-9]","",str(deptCode)[3:10]))
-    #print(a, b, c, d, e, f, g, h, i, j, k, l, m, str(r['Pay End Date'])[7:17])
-    #print (b + c)
-    #print(r['Employee Name'])
 
 df_Output.to_excel("zopt.xlsx", index = False)
-    
-#    if inv[2] == 'HQ':
-#        print(inv)
-#z = df_group['Gross Wages'].sum()
-#z
-#for inv in z:
-#    print(inv)
-#if z['Invoice Number'] == 5909273:
-#    print(z['Department Long Descr'])
+        
