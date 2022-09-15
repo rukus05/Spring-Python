@@ -5,7 +5,7 @@ import time
 import pandas as pd
 import re
 import openpyxl
-import datetime
+import datetime as dt
 import tkinter as tk
 from tkinter import TOP, ttk
 from tkinter import filedialog as fd
@@ -50,7 +50,13 @@ def main():
     df_spring['Reimbursement-Non Taxable'] = df_spring['Reimbursement-Non Taxable'].fillna(0)
     df_spring['Total Client Charges'] = df_spring['Total Client Charges'].fillna(0)
     
+    #Fixes date formatting of the date fields
+    df_spring['Pay End Date'] = pd.to_datetime(df_spring['Pay End Date']).dt.date
+    df_spring['Invoice Date'] = pd.to_datetime(df_spring['Invoice Date']).dt.date
+    
+    #df_spring.to_excel("008-payroll-test.xlsx", index = False)
     # Create new Dataframe for the Exceptions Output.
+    
     df_exceptions = pd.DataFrame(columns=['Employee Name', 'Invoice Number', 'Pay End Date', 'Invoice Date', 'LOCATION', 'SUB_DEPARTMENT', 'Department Long Descr', 'DEPT CODE', 'Gross Wages', 'OT', 'Bonus', 'Taxes - ER - Totals', 'Workers Comp Fee - Totals', '401k/Roth-ER', 'BENEFITS wo 401K', 'TOTAL FEES', 'PTO2', 'Electronics Nontaxable', 'Reimbursement-Non Taxable', 'Total Client Charges'])
     
     # Create new Dataframe for the Output.
@@ -391,6 +397,7 @@ def main():
     # Create new Dataframe for the Output.
     df_Output = pd.DataFrame(columns=['Entity', 'PostDate', 'DocDate', 'DocNo', 'AcctType', 'AcctNo', 'AcctName', 'Description', 'DebitAmt', 'CreditAmt', 'Loc', 'Dept', 'Provider', 'Service Line', 'Comments'])
     #print(df_Output)
+    
     CoA_Index = 0
     for name, r in df_group:
         #print(name[2])
@@ -433,24 +440,25 @@ def main():
         """
 
         ped = r['Pay End Date']
+        
         ivd = r['Invoice Date']
         deptCode = r['DEPT CODE']
         dp = re.sub(r"[^0-9]","",str(deptCode)[3:10])
-
+        
         
         if m != 0:
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[4][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), b, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[5][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), c, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[6][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), d, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[7][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), e, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[8][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), f, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[9][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), g, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[10][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), h, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[11][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), i, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[12][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), j, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[13][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), k, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[14][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), l, "", name[3], dp, "", "", ""]
-            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], 23300, "", str(name[0]) + ' ' + str(name[1]), "", m, name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], CoA[4][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), b, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], CoA[5][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), c, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], CoA[6][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), d, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], CoA[7][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), e, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], CoA[8][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), f, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], CoA[9][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), g, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], CoA[10][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), h, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], CoA[11][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), i, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], CoA[12][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), j, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], CoA[13][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), k, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], CoA[14][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), l, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[5:17], str(ivd)[5:17], "", name[2], 23300, "", str(name[0]) + ' ' + str(name[1]), "", m, name[3], dp, "", "", ""]
         
 
     
