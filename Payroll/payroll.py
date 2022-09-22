@@ -433,7 +433,12 @@ def main():
         """
 
         ped = r['Pay End Date']
+        ped_s = str(ped).split('Name', 1)[0]
+        ped_s = ped_s[len(ped_s) - 11:]
         ivd = r['Invoice Date']
+        ivd_s = str(ivd).split('Name', 1)[0]
+        ivd_s = ivd_s[len(ivd_s) - 11:]
+        #ivd_s = re.sub(r"[a-zA-Z]","",str(ivd_s)[3:10])
         deptCode = r['DEPT CODE']
         dp = re.sub(r"[^0-9]","",str(deptCode)[3:10])
 
