@@ -3,6 +3,7 @@
 from msilib.schema import File
 import time
 import pandas as pd
+import re
 import openpyxl
 import datetime
 import tkinter as tk
@@ -104,71 +105,71 @@ def main():
                     if (row['Invoice Number'] == i) and (row['Department Long Descr'] == j) and (row['SUB_DEPARTMENT'] == k):
                         ## Try using this here:  
                         ## if row[0] in cs_revenue_dict:
-                        for key in exc_Dict:
-                            if (row['Employee Name'] == key):
-                                #print(key, " ", i, " ", j, " ", k)
-                                exc_Dict[key][0] = exc_Dict[key][0] + row['Gross Wages']
-                                exc_Dict[key][1] = exc_Dict[key][1] + row['OT']
-                                exc_Dict[key][2] = exc_Dict[key][2] + row['Bonus']
-                                exc_Dict[key][3] = exc_Dict[key][3] + row['Taxes - ER - Totals']
-                                exc_Dict[key][4] = exc_Dict[key][4] + row['Workers Comp Fee - Totals']
-                                exc_Dict[key][5] = exc_Dict[key][5] + row['401k/Roth-ER']
-                                exc_Dict[key][6] = exc_Dict[key][6] + row['BENEFITS wo 401K']
-                                exc_Dict[key][7] = exc_Dict[key][7] + row['TOTAL FEES']
-                                exc_Dict[key][8] = exc_Dict[key][8] + row['PTO2']
-                                exc_Dict[key][9] = exc_Dict[key][9] + row['Electronics Nontaxable']
-                                exc_Dict[key][10] = exc_Dict[key][10] + row['Reimbursement-Non Taxable']
-                                exc_Dict[key][11] = exc_Dict[key][11] + row['Total Client Charges']
-                                exc_Dict[key][12] = row['DEPT CODE']
-                                exc_Dict[key][13] = row['Employee Name']
-                                exc_Dict[key][14] = row['Pay End Date']
-                                exc_Dict[key][15] = row['Invoice Date']
-                                exc_Dict[key][16] = True
-                                df_spring = df_spring.drop(index)
+                        if row['Employee Name'] in exc_Dict:
+                            key = row['Employee Name']
+                            #print(key, " ", i, " ", j, " ", k)
+                            exc_Dict[key][0] = exc_Dict[key][0] + row['Gross Wages']
+                            exc_Dict[key][1] = exc_Dict[key][1] + row['OT']
+                            exc_Dict[key][2] = exc_Dict[key][2] + row['Bonus']
+                            exc_Dict[key][3] = exc_Dict[key][3] + row['Taxes - ER - Totals']
+                            exc_Dict[key][4] = exc_Dict[key][4] + row['Workers Comp Fee - Totals']
+                            exc_Dict[key][5] = exc_Dict[key][5] + row['401k/Roth-ER']
+                            exc_Dict[key][6] = exc_Dict[key][6] + row['BENEFITS wo 401K']
+                            exc_Dict[key][7] = exc_Dict[key][7] + row['TOTAL FEES']
+                            exc_Dict[key][8] = exc_Dict[key][8] + row['PTO2']
+                            exc_Dict[key][9] = exc_Dict[key][9] + row['Electronics Nontaxable']
+                            exc_Dict[key][10] = exc_Dict[key][10] + row['Reimbursement-Non Taxable']
+                            exc_Dict[key][11] = exc_Dict[key][11] + row['Total Client Charges']
+                            exc_Dict[key][12] = row['DEPT CODE']
+                            exc_Dict[key][13] = row['Employee Name']
+                            exc_Dict[key][14] = row['Pay End Date']
+                            exc_Dict[key][15] = row['Invoice Date']
+                            exc_Dict[key][16] = True
+                            df_spring = df_spring.drop(index)
 
-                        for key2 in cc_Dict:
-                            if (row['Employee Name'] == key2):
-                                #print(key2, " ", i, " ", j, " ", k)
-                                cc_Dict[key2][0] = cc_Dict[key2][0] + row['Gross Wages']
-                                cc_Dict[key2][1] = cc_Dict[key2][1] + row['OT']
-                                cc_Dict[key2][2] = cc_Dict[key2][2] + row['Bonus']
-                                cc_Dict[key2][3] = cc_Dict[key2][3] + row['Taxes - ER - Totals']
-                                cc_Dict[key2][4] = cc_Dict[key2][4] + row['Workers Comp Fee - Totals']
-                                cc_Dict[key2][5] = cc_Dict[key2][5] + row['401k/Roth-ER']
-                                cc_Dict[key2][6] = cc_Dict[key2][6] + row['BENEFITS wo 401K']
-                                cc_Dict[key2][7] = cc_Dict[key2][7] + row['TOTAL FEES']
-                                cc_Dict[key2][8] = cc_Dict[key2][8] + row['PTO2']
-                                cc_Dict[key2][9] = cc_Dict[key2][9] + row['Electronics Nontaxable']
-                                cc_Dict[key2][10] = cc_Dict[key2][10] + row['Reimbursement-Non Taxable']
-                                cc_Dict[key2][11] = cc_Dict[key2][11] + row['Total Client Charges']
-                                cc_Dict[key2][12] = row['DEPT CODE']
-                                cc_Dict[key2][13] = row['Employee Name']
-                                cc_Dict[key2][14] = row['Pay End Date']
-                                cc_Dict[key2][15] = row['Invoice Date']
-                                cc_Dict[key2][16] = True
-                                df_spring = df_spring.drop(index)
+                        if row['Employee Name'] in cc_Dict:
+                            key2 = row['Employee Name']
+                            #print(key2, " ", i, " ", j, " ", k)
+                            cc_Dict[key2][0] = cc_Dict[key2][0] + row['Gross Wages']
+                            cc_Dict[key2][1] = cc_Dict[key2][1] + row['OT']
+                            cc_Dict[key2][2] = cc_Dict[key2][2] + row['Bonus']
+                            cc_Dict[key2][3] = cc_Dict[key2][3] + row['Taxes - ER - Totals']
+                            cc_Dict[key2][4] = cc_Dict[key2][4] + row['Workers Comp Fee - Totals']
+                            cc_Dict[key2][5] = cc_Dict[key2][5] + row['401k/Roth-ER']
+                            cc_Dict[key2][6] = cc_Dict[key2][6] + row['BENEFITS wo 401K']
+                            cc_Dict[key2][7] = cc_Dict[key2][7] + row['TOTAL FEES']
+                            cc_Dict[key2][8] = cc_Dict[key2][8] + row['PTO2']
+                            cc_Dict[key2][9] = cc_Dict[key2][9] + row['Electronics Nontaxable']
+                            cc_Dict[key2][10] = cc_Dict[key2][10] + row['Reimbursement-Non Taxable']
+                            cc_Dict[key2][11] = cc_Dict[key2][11] + row['Total Client Charges']
+                            cc_Dict[key2][12] = row['DEPT CODE']
+                            cc_Dict[key2][13] = row['Employee Name']
+                            cc_Dict[key2][14] = row['Pay End Date']
+                            cc_Dict[key2][15] = row['Invoice Date']
+                            cc_Dict[key2][16] = True
+                            df_spring = df_spring.drop(index)
 
-                        for key3 in mr_Dict:
-                            if (row['Employee Name'] == key3):
-                                #print(key2, " ", i, " ", j, " ", k)
-                                mr_Dict[key3][0] =  mr_Dict[key3][0] + row['Gross Wages']
-                                mr_Dict[key3][1] =  mr_Dict[key3][1] + row['OT']
-                                mr_Dict[key3][2] =  mr_Dict[key3][2] + row['Bonus']
-                                mr_Dict[key3][3] =  mr_Dict[key3][3] + row['Taxes - ER - Totals']
-                                mr_Dict[key3][4] =  mr_Dict[key3][4] + row['Workers Comp Fee - Totals']
-                                mr_Dict[key3][5] =  mr_Dict[key3][5] + row['401k/Roth-ER']
-                                mr_Dict[key3][6] =  mr_Dict[key3][6] + row['BENEFITS wo 401K']
-                                mr_Dict[key3][7] =  mr_Dict[key3][7] + row['TOTAL FEES']
-                                mr_Dict[key3][8] =  mr_Dict[key3][8] + row['PTO2']
-                                mr_Dict[key3][9] =  mr_Dict[key3][9] + row['Electronics Nontaxable']
-                                mr_Dict[key3][10] =  mr_Dict[key3][10] + row['Reimbursement-Non Taxable']
-                                mr_Dict[key3][11] =  mr_Dict[key3][11] + row['Total Client Charges']
-                                mr_Dict[key3][12] = row['DEPT CODE']
-                                mr_Dict[key3][13] = row['Employee Name']
-                                mr_Dict[key3][14] = row['Pay End Date']
-                                mr_Dict[key3][15] = row['Invoice Date']
-                                mr_Dict[key3][16] = True
-                                df_spring = df_spring.drop(index)
+                        if row['Employee Name'] in mr_Dict:
+                            key3 = row['Employee Name']
+                            #print(key2, " ", i, " ", j, " ", k)
+                            mr_Dict[key3][0] =  mr_Dict[key3][0] + row['Gross Wages']
+                            mr_Dict[key3][1] =  mr_Dict[key3][1] + row['OT']
+                            mr_Dict[key3][2] =  mr_Dict[key3][2] + row['Bonus']
+                            mr_Dict[key3][3] =  mr_Dict[key3][3] + row['Taxes - ER - Totals']
+                            mr_Dict[key3][4] =  mr_Dict[key3][4] + row['Workers Comp Fee - Totals']
+                            mr_Dict[key3][5] =  mr_Dict[key3][5] + row['401k/Roth-ER']
+                            mr_Dict[key3][6] =  mr_Dict[key3][6] + row['BENEFITS wo 401K']
+                            mr_Dict[key3][7] =  mr_Dict[key3][7] + row['TOTAL FEES']
+                            mr_Dict[key3][8] =  mr_Dict[key3][8] + row['PTO2']
+                            mr_Dict[key3][9] =  mr_Dict[key3][9] + row['Electronics Nontaxable']
+                            mr_Dict[key3][10] =  mr_Dict[key3][10] + row['Reimbursement-Non Taxable']
+                            mr_Dict[key3][11] =  mr_Dict[key3][11] + row['Total Client Charges']
+                            mr_Dict[key3][12] = row['DEPT CODE']
+                            mr_Dict[key3][13] = row['Employee Name']
+                            mr_Dict[key3][14] = row['Pay End Date']
+                            mr_Dict[key3][15] = row['Invoice Date']
+                            mr_Dict[key3][16] = True
+                            df_spring = df_spring.drop(index)
 
 
                 for emp in exc_Dict:
@@ -358,9 +359,6 @@ def main():
                             ivdExc = mr_Dict[emp][15]
                             # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
                             df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
-    print(cc_Dict)
-    print(mr_Dict)
-    print(exc_Dict)
                         
  
 
@@ -369,9 +367,96 @@ def main():
     
     df_concatenated.reset_index()
 
+    df_group = df_concatenated.groupby(['Invoice Number', 'Department Long Descr', 'SUB_DEPARTMENT', 'LOCATION'])
+    type(df_group)
+    df_group.ngroups
+    df_group.size()
+    df_group.groups
+
+    # Chart of Accounts
+
+        # Create a dictionary representing the Chart of Accounts
+    CoA = {4 : [61110, 51112, 51111, 51110, 61110, 61110, 51113], \
+        5 : [61120, 51122, 51121, 51120, 61120, 61120, 51123], \
+        6 : [23500, 23500, 23500, 23500, 23500, 23500, 23500], \
+        7 : [61140, 51142, 51141, 51140, 61140, 61140, 51143], \
+        8 : [61160, 51152, 51151, 51150, 61160, 61160, 51153], \
+        9 : [61170, 51162, 51161, 51160, 61170, 61170, 51163], \
+        10 : [61180, 51172, 51171, 51170, 61180, 61180, 51173], \
+        11 : [69130, 51182, 51181, 51180, 69130, 69130, 51183], \
+        12 : [23400, 23400, 23400, 23400, 23400, 23400, 23400], \
+        13 : [65190, 65190, 65190, 65190, 65190, 65190, 65190], \
+        14 : [22500, 22500, 22500, 22500, 22500, 22500, 22500]}
+
+    # Create new Dataframe for the Output.
+    df_Output = pd.DataFrame(columns=['Entity', 'PostDate', 'DocDate', 'DocNo', 'AcctType', 'AcctNo', 'AcctName', 'Description', 'DebitAmt', 'CreditAmt', 'Loc', 'Dept', 'Provider', 'Service Line', 'Comments'])
+    #print(df_Output)
+    CoA_Index = 0
+    for name, r in df_group:
+        #print(name[2])
+        if name[2] == 'HQ':
+            CoA_Index = 0
+        elif name[2] == 'Lab':
+            CoA_Index = 1
+        elif name[2] == 'ASC':
+            CoA_Index = 2
+        elif name[2] == 'Clinical':
+            CoA_Index = 3
+        elif name[2] == 'Operating':
+            CoA_Index = 4
+        elif name[2] == 'NEST':
+            CoA_Index = 5
+        elif name[2] == 'MD':
+            CoA_Index = 6
+        #print(CoA_Index)
+        a = name
+        b = r['Gross Wages'].sum()
+        c = r['OT'].sum()
+        d = r['Bonus'].sum()
+        e = r['Taxes - ER - Totals'].sum()
+        f = r['Workers Comp Fee - Totals'].sum()
+        g = r['401k/Roth-ER'].sum()
+        h = r['BENEFITS wo 401K'].sum()
+        i = r['TOTAL FEES'].sum()
+        j = r['PTO2'].sum()
+        k = r['Electronics Nontaxable'].sum()
+        l = r['Reimbursement-Non Taxable'].sum()
+        m = r['Total Client Charges'].sum()
+
+        """
+        ## Troubleshooting Code ##
+        bigsum = b+c+d+e+f+g+h+i+j+k+l
+            if abs(bigsum - m) > 1:
+
+            print(r)
+            print(a, bigsum, m)
+        """
+
+        ped = r['Pay End Date']
+        ivd = r['Invoice Date']
+        deptCode = r['DEPT CODE']
+        dp = re.sub(r"[^0-9]","",str(deptCode)[3:10])
+
+        
+        if m != 0:
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[4][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), b, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[5][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), c, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[6][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), d, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[7][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), e, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[8][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), f, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[9][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), g, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[10][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), h, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[11][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), i, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[12][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), j, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[13][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), k, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], CoA[14][CoA_Index], "", str(name[0]) + ' ' + str(name[1]), l, "", name[3], dp, "", "", ""]
+            df_Output.loc[len(df_Output.index)] = ["", str(ped)[7:17], str(ivd)[7:17], "", name[2], 23300, "", str(name[0]) + ' ' + str(name[1]), "", m, name[3], dp, "", "", ""]
+        
+
+    
     inp = input("Please type name of file for Output:")
     des = str(inp + '.xlsx')
-    df_concatenated.to_excel(des, index = False)
+    df_Output.to_excel(des, index = False)
 
     runningtime = time.time() - start
     print("The time for this script is:", runningtime)
