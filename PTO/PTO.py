@@ -14,7 +14,7 @@ from tkinter.filedialog import asksaveasfile
 def main(): 
     
     start = time.time()
-    # For this program to work properly, the CoA_Pandas.py file needs to be in the same directory as the RawData.xlsx file.
+    # If the raw data file has all the data in one file (002, 007, 008 sheets), you must save each entity in it's own file and run the program against each.
     # Read in Data from the "RawData.xlsx" file.
     f = FilePrompt()
     df_spring = pd.read_excel(f)

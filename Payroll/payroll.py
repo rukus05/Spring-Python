@@ -76,6 +76,8 @@ def main():
         if row['Employee Name'] == 'Lee,Stephannie Victoria':
             df_spring.at[index, 'Department Long Descr'] = 'Call Center'
             df_spring.at[index, 'LOCATION'] = 'HQ'
+        if row['Employee Name'] == 'Klatsky,Peter':
+            df_spring.at[index, 'LOCATION'] = 'HQ'
     # Add all Call Center People (Not Stephannie Lee) into a Dict Data Structure
     # Add all Medical Records People into a Dict Data Structure
     for index, row in df_spring.iterrows():
