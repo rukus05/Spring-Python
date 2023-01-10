@@ -28,13 +28,13 @@ def main():
     unique_Locations = df_spring['LOCATION'].unique()
     unique_SubDept = df_spring['SUB_DEPARTMENT'].unique()
     unique_DptCode = df_spring['DEPT CODE'].unique()
-    unique_Entity = df_spring['ENTITY'].unique()
+    unique_Entity = df_spring['Entity'].unique()
     #print(unique_DLD)
     #print(df_spring.info())
     #  It's important to fill in blank cells for the below columns with Zeros.  A blank cell breaks the calculations
     #  The .fillna() method fills blank cells in these columns with 0's.
     df_spring['ACCRUAL'] = df_spring['ACCRUAL'].fillna(0)
-    df_spring['ENTITY'] = df_spring['ENTITY'].fillna(0)
+    df_spring['Entity'] = df_spring['Entity'].fillna(0)
     
     
     # Create new Dataframe for the Output.
@@ -54,7 +54,7 @@ def main():
                     if (row['SUB_DEPARTMENT'] == i) and (row['LOCATION'] == j) and (row['DEPT CODE'] == k):
                         # Sum up the pertinent columns.
                         Accrual_Sum = Accrual_Sum + row['ACCRUAL']
-                        glCode = row['GL CODE']
+                        glCode = row['GL Code']
                         deptCode = row['DEPT CODE']
                         #subDept = row['SUB_DEPARTMENT']
                        
