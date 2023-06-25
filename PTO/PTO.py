@@ -307,9 +307,7 @@ def main():
     
     #df_group = df_concatenated.groupby(['SUB_DEPARTMENT', 'LOCATION', 'DEPT CODE', ])
     
-    df_concatenated.to_excel("concatPTO.xlsx", index = False)
     
-
     unique_Locations2 = df_concatenated['LOCATION'].unique()
     unique_SubDept2 = df_concatenated['SUB_DEPARTMENT'].unique()
     unique_DptCode2 = df_concatenated['DEPT CODE'].unique()

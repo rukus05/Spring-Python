@@ -72,8 +72,7 @@ def main():
     dldloc = df_spring.columns.get_loc('Department Long Descr')
     locloc = df_spring.columns.get_loc('LOCATION')
     # First group of 4 For loops is to Handle (Clean) Exceptions
-    # By using 4 nested FOR loops, we can group the rows by Invoices, Dept Long Desc, Sup Dept, and Location
-    
+        
     # Reclassify some exceptions before massaging the dataframe
     # for index, row in df_spring.iterrows():
         #if (row['Employee Name'] == 'Cicciarello,Claire') or (row['Employee Name'] == 'Mock,Gina M'):
@@ -101,6 +100,28 @@ def main():
             for j in unique_DLD:
                 
                 # Handle Exceptions
+                """
+                #Audrey Krall
+                exc_Dict[2495811] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # Dean, Ursula
+                exc_Dict[1906920] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # Phuong Dam
+                exc_Dict[2167864] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                 # My Dung Lee
+                exc_Dict[1788698] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # Trieu,Minh Hue
+                exc_Dict[1796892] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # Lagano,Lauren
+                exc_Dict[10328183] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # Bell,Allie
+                exc_Dict[1792388] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # Tran,Nam D
+                exc_Dict[1804091] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # Klatsky,Peter
+                exc_Dict[1770296] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                #Sergio Vaccari
+                exc_Dict[1785954] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                """
                 exc_Dict["Krall,Audrey"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 exc_Dict["Dean,Ursula J"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 exc_Dict["Dam,Phuong My"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
@@ -111,6 +132,10 @@ def main():
                 exc_Dict["Tran,Nam D"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 exc_Dict["Klatsky,Peter"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 exc_Dict["Vaccari,Sergio"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+
+                ##
+                ##  The below 2 for loops may be redundant--> logic executed in rows 92 & 95
+
                 for key in cc_Dict:
                     cc_Dict[key] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 for key in mr_Dict:
@@ -189,7 +214,7 @@ def main():
 
                 for emp in exc_Dict:
                     if re.match('Krall,Audrey*', str(emp), re.IGNORECASE) or re.match('Dean,Ursula*', str(emp), re.IGNORECASE):
-                    #if (emp == 'Krall,Audrey') or (emp == 'Dean,Ursula J'):
+                    #if re.match('2495811*', str(emp)) or re.match('1906920*', str(emp)):
                         if (exc_Dict[emp][16] == True):
                         #  Loop Through Audrey Krall Locations in Exception List
                             for loc in SFOAKSV:
@@ -219,9 +244,8 @@ def main():
                         
                     #if (emp == 'Dam,Phuong My') or (emp == 'Trieu,Minh Hue'):
                     if re.match('Dam,Phuong*', str(emp), re.IGNORECASE) or re.match('Trieu,Minh*', str(emp), re.IGNORECASE) or re.match('Bell,Allie*', str(emp), re.IGNORECASE):
-                    #if (emp == 'Dam,Phuong My') or (emp == 'Trieu,Minh Hue') or (emp == 'Bell,Allie'):
+                    #if re.match('2167864*', str(emp)) or re.match('1796892*', str(emp)) or re.match('1792388*', str(emp)):
                         if exc_Dict[emp][16] == True:
-                        
                             for loc in SFOAKSVNYC:
                                 pct = 0.25
                                 # Calculate Allocation Values
@@ -244,7 +268,7 @@ def main():
                                 df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
                     
                     if re.match('Lee,My Dung*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
-                    #if (emp == 'Lee,My Dung') and (exc_Dict[emp][16] == True):
+                    #if re.match('1788698*', str(emp)) and (exc_Dict[emp][16] == True):
                         #  Loop Through Audrey Krall Locations in Exception List
                         for loc in SFOAKSVNYCNEST:
                             if loc == 'Nest':
@@ -272,8 +296,7 @@ def main():
                             df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
                     
                     if re.match('Tran,Nam D*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
-                    #if (emp == 'Tran,Nam D') and (exc_Dict[emp][16] == True):
-                        #  Loop Through Audrey Krall Locations in Exception List
+                    #if re.match('1804091*', str(emp)) and (exc_Dict[emp][16] == True):                        
                         for loc in SFSV:
                             if loc == 'SF':
                                 pct = 0.65
@@ -300,8 +323,8 @@ def main():
                             df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
                     
                     if re.match('Klatsky,Peter*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
-                    #if (emp == 'Klatsky,Peter') and (exc_Dict[emp][16] == True):
-                        #  Loop Through Audrey Krall Locations in Exception List
+                    #if re.match('1770296*', str(emp)) and (exc_Dict[emp][16] == True):
+                    
                         for loc in NYCMSO:
                             if loc == 'NYC':
                                 pct = 0.6
@@ -328,10 +351,13 @@ def main():
                             df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
                     
                     if re.match('Vaccari,Sergio*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
-                    #if (emp == 'Vaccari,Sergio') and (exc_Dict[emp][16] == True):
+                    #if re.match('1785954*', str(emp)) and (exc_Dict[emp][16] == True):
                         #  Loop Through Sergio Vaccari Locations in Exception List
                         for loc in SFOAKSV:
-                            pct = 0.3333
+                            if loc == 'SF':
+                                pct = 0.34
+                            else:
+                                pct = 0.33
                             # Calculate Allocation Values
                             alloc_GrossWages_Sum = exc_Dict[emp][0] * pct
                             alloc_OT_Sum = exc_Dict[emp][1] * pct
@@ -352,8 +378,8 @@ def main():
                             # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
                             df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
                     
-                    if re.match('Legano,Lauren*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
-                    #if (emp == 'Lagano,Lauren') and exc_Dict[emp][16] == True:
+                    if re.match('Lagano,Lauren*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
+                    #if re.match('10328183*', str(emp)) and (exc_Dict[emp][16] == True):
                         #  Loop Through Sergio Vaccari Locations in Exception List
                         for loc in HQNEST:
                             pct = 0.5
@@ -441,7 +467,7 @@ def main():
     df_concatenated = pd.concat([df_spring, df_exceptions], ignore_index=True).fillna(0)
     
     df_concatenated.reset_index()
-    
+    df_concatenated.to_excel('test.xlsx', index = False)
     df_group = df_concatenated.groupby(['Invoice Number', 'Department Long Descr', 'SUB_DEPARTMENT', 'LOCATION'])
     type(df_group)
     df_group.ngroups
