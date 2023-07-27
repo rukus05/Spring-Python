@@ -61,7 +61,10 @@ def main():
     #
     exc_Dict = {}   # Exclusion Dict
     cc_Dict = {}    # Call Center Dict
-    mr_Dict = {}    # Call Center Dict
+    mr_Dict = {}    # Medical Records Dict
+    rhq_Dict = {}   # Reception HQ Dict
+    fc_Dict = {}    # Financial Counselor Dict
+    co_Dict = {}    # Clinical Operations Dict
     SFOAKSV = ['SF', 'OAK', 'SV']
     #CC = ['SF', 'OAK', 'SV', 'NY']
     SFOAKSVNYC = ['SF', 'OAK', 'SV', 'NYC']
@@ -72,19 +75,10 @@ def main():
     dldloc = df_spring.columns.get_loc('Department Long Descr')
     locloc = df_spring.columns.get_loc('LOCATION')
     # First group of 4 For loops is to Handle (Clean) Exceptions
-        
+    
     # Reclassify some exceptions before massaging the dataframe
-    # for index, row in df_spring.iterrows():
-        #if (row['Employee Name'] == 'Cicciarello,Claire') or (row['Employee Name'] == 'Mock,Gina M'):
-        #    df_spring.at[index, 'Department Long Descr'] = 'Operating'
-        #    df_spring.at[index, 'LOCATION'] = 'NYC'
-        #if row['Employee Name'] == 'Lee,Stephannie Victoria':
-        #    df_spring.at[index, 'Department Long Descr'] = 'Call Center'
-        #    df_spring.at[index, 'LOCATION'] = 'HQ'
-        #if row['Employee Name'] == 'Klatsky,Peter':
-        #    df_spring.at[index, 'LOCATION'] = 'HQ'
-    # Add all Call Center People into a Dict Data Structure
-    # Add all Medical Records People into a Dict Data Structure
+    # Add all People to the appropriate Dict Data Structure:
+    # Call Center, Medical Records, Receptionist HQ, Financial Counselor, Clincal Operations
     for index, row in df_spring.iterrows():
         #if (row['Department Long Descr'] == 'Call Center') and (row['Employee Name'] != 'Lee,Stephannie Victoria'): 
         if re.match('Call Center*', str(row['Department Long Descr']), re.IGNORECASE):
@@ -93,8 +87,20 @@ def main():
         if re.match('Medical Records*', str(row['Department Long Descr']), re.IGNORECASE):
         #if (row['Department Long Descr'] == 'Medical Records'): 
             mr_Dict[row['Employee Name']] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+        if re.match('Receptionist HQ*', str(row['Department Long Descr']), re.IGNORECASE):
+        #if (row['Department Long Descr'] == 'Receptionist HQ'): 
+            rhq_Dict[row['Employee Name']] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+        if re.match('Financial Counselor*', str(row['Department Long Descr']), re.IGNORECASE):
+        #if (row['Department Long Descr'] == 'Financial Counselor'): 
+            fc_Dict[row['Employee Name']] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+        if re.match('Clinical Operations*', str(row['Department Long Descr']), re.IGNORECASE):
+        #if (row['Department Long Descr'] == 'Clinical Operations'): 
+            co_Dict[row['Employee Name']] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
     
-    
+    print(co_Dict)
+    print(fc_Dict)
+    #print(fc_Dict)
+
     for i in uniqueInvoices:
         for k in uniqueSub_Dept:
             for j in unique_DLD:
@@ -124,30 +130,34 @@ def main():
                 """
                 exc_Dict["Krall,Audrey"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 exc_Dict["Dean,Ursula J"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
-                exc_Dict["Dam,Phuong My"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
-                exc_Dict["Lee,My Dung"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
-                exc_Dict["Trieu,Minh Hue"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
-                exc_Dict["Lagano,Lauren"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
-                exc_Dict["Bell,Allie"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # exc_Dict["Dam,Phuong My"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # exc_Dict["Lee,My Dung"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # exc_Dict["Trieu,Minh Hue"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # exc_Dict["Lagano,Lauren"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                # exc_Dict["Bell,Allie"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 exc_Dict["Tran,Nam D"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 exc_Dict["Klatsky,Peter"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 exc_Dict["Vaccari,Sergio"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
 
                 ##
-                ##  The below 2 for loops may be redundant--> logic executed in rows 92 & 95
+                ##  The below for loops may be redundant--> logic executed in rows 92 & 95
 
                 for key in cc_Dict:
                     cc_Dict[key] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 for key in mr_Dict:
                     mr_Dict[key] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                for key in rhq_Dict:
+                    rhq_Dict[key] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                for key in fc_Dict:
+                    fc_Dict[key] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                for key in co_Dict:
+                    co_Dict[key] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
 
                 for index, row in df_spring.iterrows():
                     if (row['Invoice Number'] == i) and (row['Department Long Descr'] == j) and (row['SUB_DEPARTMENT'] == k):
-                        ## Try using this here:  
-                        ## if row[0] in cs_revenue_dict:
+                        
                         for key in exc_Dict:
                             if (row['Employee Name'] == key):
-                                #print(key, " ", i, " ", j, " ", k)
                                 exc_Dict[key][0] = exc_Dict[key][0] + row['Gross Wages']
                                 exc_Dict[key][1] = exc_Dict[key][1] + row['OT']
                                 exc_Dict[key][2] = exc_Dict[key][2] + row['Bonus']
@@ -189,27 +199,95 @@ def main():
                                 cc_Dict[key2][16] = True
                                 df_spring = df_spring.drop(index)
 
-                        for key3 in mr_Dict:
+                        for key3 in rhq_Dict:
                             if (row['Employee Name'] == key3):
                                 #print(key2, " ", i, " ", j, " ", k)
-                                mr_Dict[key3][0] =  mr_Dict[key3][0] + row['Gross Wages']
-                                mr_Dict[key3][1] =  mr_Dict[key3][1] + row['OT']
-                                mr_Dict[key3][2] =  mr_Dict[key3][2] + row['Bonus']
-                                mr_Dict[key3][3] =  mr_Dict[key3][3] + row['Taxes - ER - Totals']
-                                mr_Dict[key3][4] =  mr_Dict[key3][4] + row['Workers Comp Fee - Totals']
-                                mr_Dict[key3][5] =  mr_Dict[key3][5] + row['401k/Roth-ER']
-                                mr_Dict[key3][6] =  mr_Dict[key3][6] + row['BENEFITS wo 401K']
-                                mr_Dict[key3][7] =  mr_Dict[key3][7] + row['TOTAL FEES']
-                                mr_Dict[key3][8] =  mr_Dict[key3][8] + row['PTO2']
-                                mr_Dict[key3][9] =  mr_Dict[key3][9] + row['Electronics Nontaxable']
-                                mr_Dict[key3][10] =  mr_Dict[key3][10] + row['Reimbursement-Non Taxable']
-                                mr_Dict[key3][11] =  mr_Dict[key3][11] + row['Total Client Charges']
-                                mr_Dict[key3][12] = row['DEPT CODE']
-                                mr_Dict[key3][13] = row['Employee Name']
-                                mr_Dict[key3][14] = row['Pay End Date']
-                                mr_Dict[key3][15] = row['Invoice Date']
-                                mr_Dict[key3][16] = True
+                                rhq_Dict[key3][0] =  rhq_Dict[key3][0] + row['Gross Wages']
+                                rhq_Dict[key3][1] =  rhq_Dict[key3][1] + row['OT']
+                                rhq_Dict[key3][2] =  rhq_Dict[key3][2] + row['Bonus']
+                                rhq_Dict[key3][3] =  rhq_Dict[key3][3] + row['Taxes - ER - Totals']
+                                rhq_Dict[key3][4] =  rhq_Dict[key3][4] + row['Workers Comp Fee - Totals']
+                                rhq_Dict[key3][5] =  rhq_Dict[key3][5] + row['401k/Roth-ER']
+                                rhq_Dict[key3][6] =  rhq_Dict[key3][6] + row['BENEFITS wo 401K']
+                                rhq_Dict[key3][7] =  rhq_Dict[key3][7] + row['TOTAL FEES']
+                                rhq_Dict[key3][8] =  rhq_Dict[key3][8] + row['PTO2']
+                                rhq_Dict[key3][9] =  rhq_Dict[key3][9] + row['Electronics Nontaxable']
+                                rhq_Dict[key3][10] =  rhq_Dict[key3][10] + row['Reimbursement-Non Taxable']
+                                rhq_Dict[key3][11] =  rhq_Dict[key3][11] + row['Total Client Charges']
+                                rhq_Dict[key3][12] = row['DEPT CODE']
+                                rhq_Dict[key3][13] = row['Employee Name']
+                                rhq_Dict[key3][14] = row['Pay End Date']
+                                rhq_Dict[key3][15] = row['Invoice Date']
+                                rhq_Dict[key3][16] = True
                                 df_spring = df_spring.drop(index)
+
+                        for key4 in mr_Dict:
+                            if (row['Employee Name'] == key4):
+                                #print(key2, " ", i, " ", j, " ", k)
+                                mr_Dict[key4][0] =  mr_Dict[key4][0] + row['Gross Wages']
+                                mr_Dict[key4][1] =  mr_Dict[key4][1] + row['OT']
+                                mr_Dict[key4][2] =  mr_Dict[key4][2] + row['Bonus']
+                                mr_Dict[key4][3] =  mr_Dict[key4][3] + row['Taxes - ER - Totals']
+                                mr_Dict[key4][4] =  mr_Dict[key4][4] + row['Workers Comp Fee - Totals']
+                                mr_Dict[key4][5] =  mr_Dict[key4][5] + row['401k/Roth-ER']
+                                mr_Dict[key4][6] =  mr_Dict[key4][6] + row['BENEFITS wo 401K']
+                                mr_Dict[key4][7] =  mr_Dict[key4][7] + row['TOTAL FEES']
+                                mr_Dict[key4][8] =  mr_Dict[key4][8] + row['PTO2']
+                                mr_Dict[key4][9] =  mr_Dict[key4][9] + row['Electronics Nontaxable']
+                                mr_Dict[key4][10] =  mr_Dict[key4][10] + row['Reimbursement-Non Taxable']
+                                mr_Dict[key4][11] =  mr_Dict[key4][11] + row['Total Client Charges']
+                                mr_Dict[key4][12] = row['DEPT CODE']
+                                mr_Dict[key4][13] = row['Employee Name']
+                                mr_Dict[key4][14] = row['Pay End Date']
+                                mr_Dict[key4][15] = row['Invoice Date']
+                                mr_Dict[key4][16] = True
+                                df_spring = df_spring.drop(index)
+
+                        for key5 in fc_Dict:
+                            if (row['Employee Name'] == key5):
+                                #print(key2, " ", i, " ", j, " ", k)
+                                fc_Dict[key5][0] =  fc_Dict[key5][0] + row['Gross Wages']
+                                fc_Dict[key5][1] =  fc_Dict[key5][1] + row['OT']
+                                fc_Dict[key5][2] =  fc_Dict[key5][2] + row['Bonus']
+                                fc_Dict[key5][3] =  fc_Dict[key5][3] + row['Taxes - ER - Totals']
+                                fc_Dict[key5][4] =  fc_Dict[key5][4] + row['Workers Comp Fee - Totals']
+                                fc_Dict[key5][5] =  fc_Dict[key5][5] + row['401k/Roth-ER']
+                                fc_Dict[key5][6] =  fc_Dict[key5][6] + row['BENEFITS wo 401K']
+                                fc_Dict[key5][7] =  fc_Dict[key5][7] + row['TOTAL FEES']
+                                fc_Dict[key5][8] =  fc_Dict[key5][8] + row['PTO2']
+                                fc_Dict[key5][9] =  fc_Dict[key5][9] + row['Electronics Nontaxable']
+                                fc_Dict[key5][10] =  fc_Dict[key5][10] + row['Reimbursement-Non Taxable']
+                                fc_Dict[key5][11] =  fc_Dict[key5][11] + row['Total Client Charges']
+                                fc_Dict[key5][12] = row['DEPT CODE']
+                                fc_Dict[key5][13] = row['Employee Name']
+                                fc_Dict[key5][14] = row['Pay End Date']
+                                fc_Dict[key5][15] = row['Invoice Date']
+                                fc_Dict[key5][16] = True
+                                df_spring = df_spring.drop(index)
+
+                        for key6 in co_Dict:
+                            if (row['Employee Name'] == key6):
+                                #print(key2, " ", i, " ", j, " ", k)
+                                co_Dict[key6][0] =  co_Dict[key6][0] + row['Gross Wages']
+                                co_Dict[key6][1] =  co_Dict[key6][1] + row['OT']
+                                co_Dict[key6][2] =  co_Dict[key6][2] + row['Bonus']
+                                co_Dict[key6][3] =  co_Dict[key6][3] + row['Taxes - ER - Totals']
+                                co_Dict[key6][4] =  co_Dict[key6][4] + row['Workers Comp Fee - Totals']
+                                co_Dict[key6][5] =  co_Dict[key6][5] + row['401k/Roth-ER']
+                                co_Dict[key6][6] =  co_Dict[key6][6] + row['BENEFITS wo 401K']
+                                co_Dict[key6][7] =  co_Dict[key6][7] + row['TOTAL FEES']
+                                co_Dict[key6][8] =  co_Dict[key6][8] + row['PTO2']
+                                co_Dict[key6][9] =  co_Dict[key6][9] + row['Electronics Nontaxable']
+                                co_Dict[key6][10] =  co_Dict[key6][10] + row['Reimbursement-Non Taxable']
+                                co_Dict[key6][11] =  co_Dict[key6][11] + row['Total Client Charges']
+                                co_Dict[key6][12] = row['DEPT CODE']
+                                co_Dict[key6][13] = row['Employee Name']
+                                co_Dict[key6][14] = row['Pay End Date']
+                                co_Dict[key6][15] = row['Invoice Date']
+                                co_Dict[key6][16] = True
+                                df_spring = df_spring.drop(index)
+
+
 
 
                 for emp in exc_Dict:
@@ -219,9 +297,11 @@ def main():
                         #  Loop Through Audrey Krall Locations in Exception List
                             for loc in SFOAKSV:
                                 if loc == 'SF':
-                                    pct = 0.80
-                                else:
-                                    pct = 0.10
+                                    pct = 0.5625
+                                if loc == 'OAK':
+                                    pct = 0.25
+                                if loc == 'SV':
+                                    pct = 0.1875
                                 # Calculate Allocation Values
                                 alloc_GrossWages_Sum = exc_Dict[emp][0] * pct
                                 alloc_OT_Sum = exc_Dict[emp][1] * pct
@@ -243,11 +323,20 @@ def main():
                                 df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
                         
                     #if (emp == 'Dam,Phuong My') or (emp == 'Trieu,Minh Hue'):
+                    '''
+                    These 3 are now part of co_Dict as of 7/25
                     if re.match('Dam,Phuong*', str(emp), re.IGNORECASE) or re.match('Trieu,Minh*', str(emp), re.IGNORECASE) or re.match('Bell,Allie*', str(emp), re.IGNORECASE):
                     #if re.match('2167864*', str(emp)) or re.match('1796892*', str(emp)) or re.match('1792388*', str(emp)):
                         if exc_Dict[emp][16] == True:
                             for loc in SFOAKSVNYC:
-                                pct = 0.25
+                                if loc == 'SF':
+                                    pct = 0.45
+                                if loc == 'OAK':
+                                    pct = 0.2
+                                if loc == 'SV':
+                                    pct = 0.15
+                                if loc == 'NYC':
+                                    pct = 0.2
                                 # Calculate Allocation Values
                                 alloc_GrossWages_Sum = exc_Dict[emp][0] * pct
                                 alloc_OT_Sum = exc_Dict[emp][1] * pct
@@ -266,42 +355,15 @@ def main():
                                 pedExc = exc_Dict[emp][14]
                                 ivdExc = exc_Dict[emp][15]
                                 df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
-                    
-                    if re.match('Lee,My Dung*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
-                    #if re.match('1788698*', str(emp)) and (exc_Dict[emp][16] == True):
-                        #  Loop Through Audrey Krall Locations in Exception List
-                        for loc in SFOAKSVNYCNEST:
-                            if loc == 'Nest':
-                                pct = 0.1
-                            else:
-                                pct = 0.225
-                            # Calculate Allocation Values
-                            alloc_GrossWages_Sum = exc_Dict[emp][0] * pct
-                            alloc_OT_Sum = exc_Dict[emp][1] * pct
-                            alloc_Bonus_Sum = exc_Dict[emp][2] * pct
-                            alloc_TaxesERTotals_Sum = exc_Dict[emp][3] * pct
-                            alloc_WorkersCompFeeTot_Sum = exc_Dict[emp][4] * pct
-                            alloc_Roth401kCombo_Sum = exc_Dict[emp][5] * pct
-                            alloc_BenWO401k_Sum = exc_Dict[emp][6] * pct
-                            alloc_TotalFees_Sum = exc_Dict[emp][7] * pct
-                            alloc_PTO2_Sum = exc_Dict[emp][8] * pct
-                            alloc_ElecNonTax_Sum = exc_Dict[emp][9] * pct
-                            alloc_ReimbNonTax_Sum = exc_Dict[emp][10] * pct
-                            alloc_TotClientCharges_Sum = exc_Dict[emp][11] * pct
-                            empN = exc_Dict[emp][13]
-                            deptCode = exc_Dict[emp][12]
-                            pedExc = exc_Dict[emp][14]
-                            ivdExc = exc_Dict[emp][15]
-                            # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
-                            df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
+                    '''
                     
                     if re.match('Tran,Nam D*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
                     #if re.match('1804091*', str(emp)) and (exc_Dict[emp][16] == True):                        
                         for loc in SFSV:
                             if loc == 'SF':
-                                pct = 0.65
+                                pct = 0.8125
                             else:
-                                pct = 0.35
+                                pct = 0.1875
                             # Calculate Allocation Values
                             alloc_GrossWages_Sum = exc_Dict[emp][0] * pct
                             alloc_OT_Sum = exc_Dict[emp][1] * pct
@@ -327,9 +389,9 @@ def main():
                     
                         for loc in NYCMSO:
                             if loc == 'NYC':
-                                pct = 0.6
+                                pct = 0.75
                             else:
-                                pct = 0.4
+                                pct = 0.25
                             # Calculate Allocation Values
                             alloc_GrossWages_Sum = exc_Dict[emp][0] * pct
                             alloc_OT_Sum = exc_Dict[emp][1] * pct
@@ -355,9 +417,11 @@ def main():
                         #  Loop Through Sergio Vaccari Locations in Exception List
                         for loc in SFOAKSV:
                             if loc == 'SF':
-                                pct = 0.34
-                            else:
-                                pct = 0.33
+                                pct = 0.5625
+                            if loc == 'OAK':
+                                pct = 0.25
+                            if loc == 'SV':    
+                                pct = 0.1875
                             # Calculate Allocation Values
                             alloc_GrossWages_Sum = exc_Dict[emp][0] * pct
                             alloc_OT_Sum = exc_Dict[emp][1] * pct
@@ -378,30 +442,6 @@ def main():
                             # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
                             df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
                     
-                    if re.match('Lagano,Lauren*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
-                    #if re.match('10328183*', str(emp)) and (exc_Dict[emp][16] == True):
-                        #  Loop Through Sergio Vaccari Locations in Exception List
-                        for loc in HQNEST:
-                            pct = 0.5
-                            # Calculate Allocation Values
-                            alloc_GrossWages_Sum = exc_Dict[emp][0] * pct
-                            alloc_OT_Sum = exc_Dict[emp][1] * pct
-                            alloc_Bonus_Sum = exc_Dict[emp][2] * pct
-                            alloc_TaxesERTotals_Sum = exc_Dict[emp][3] * pct
-                            alloc_WorkersCompFeeTot_Sum = exc_Dict[emp][4] * pct
-                            alloc_Roth401kCombo_Sum = exc_Dict[emp][5] * pct
-                            alloc_BenWO401k_Sum = exc_Dict[emp][6] * pct
-                            alloc_TotalFees_Sum = exc_Dict[emp][7] * pct
-                            alloc_PTO2_Sum = exc_Dict[emp][8] * pct
-                            alloc_ElecNonTax_Sum = exc_Dict[emp][9] * pct
-                            alloc_ReimbNonTax_Sum = exc_Dict[emp][10] * pct
-                            alloc_TotClientCharges_Sum = exc_Dict[emp][11] * pct
-                            empN = exc_Dict[emp][13]
-                            deptCode = exc_Dict[emp][12]
-                            pedExc = exc_Dict[emp][14]
-                            ivdExc = exc_Dict[emp][15]
-                            # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
-                            df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
                     
                 
                 for emp in cc_Dict:
@@ -409,7 +449,14 @@ def main():
                     if cc_Dict[emp][16] == True:
 
                         for loc in SFOAKSVNYC:
-                            pct = 0.25
+                            if loc == 'SF':
+                                pct = 0.45
+                            if loc == 'OAK':
+                                pct = 0.2
+                            if loc == 'SV':    
+                                pct = 0.15
+                            if loc == 'NYC':
+                                pct = 0.2
                             #if loc == 'SF':
                             #    pct = 0.34
                             #else:
@@ -440,7 +487,14 @@ def main():
                     if mr_Dict[emp][16] == True:
 
                         for loc in SFOAKSVNYC:
-                            pct = 0.25
+                            if loc == 'SF':
+                                pct = 0.45
+                            if loc == 'OAK':
+                                pct = 0.2
+                            if loc == 'SV':    
+                                pct = 0.15
+                            if loc == 'NYC':
+                                pct = 0.2
                             # Calculate Allocation Values
                             alloc_GrossWages_Sum = mr_Dict[emp][0] * pct
                             alloc_OT_Sum = mr_Dict[emp][1] * pct
@@ -460,9 +514,176 @@ def main():
                             ivdExc = mr_Dict[emp][15]
                             # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
                             df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
+
+                for emp in rhq_Dict:
+                    #  
+                    if rhq_Dict[emp][16] == True:
+
+                        for loc in SFOAKSVNYC:
+                            if loc == 'SF':
+                                pct = 0.45
+                            if loc == 'OAK':
+                                pct = 0.2
+                            if loc == 'SV':
+                                pct = 0.15
+                            if loc == 'NYC':
+                                pct = 0.2
+                            # Calculate Allocation Values
+                            alloc_GrossWages_Sum = rhq_Dict[emp][0] * pct
+                            alloc_OT_Sum = rhq_Dict[emp][1] * pct
+                            alloc_Bonus_Sum = rhq_Dict[emp][2] * pct
+                            alloc_TaxesERTotals_Sum = rhq_Dict[emp][3] * pct
+                            alloc_WorkersCompFeeTot_Sum = rhq_Dict[emp][4] * pct
+                            alloc_Roth401kCombo_Sum = rhq_Dict[emp][5] * pct
+                            alloc_BenWO401k_Sum = rhq_Dict[emp][6] * pct
+                            alloc_TotalFees_Sum = rhq_Dict[emp][7] * pct
+                            alloc_PTO2_Sum = rhq_Dict[emp][8] * pct
+                            alloc_ElecNonTax_Sum = rhq_Dict[emp][9] * pct
+                            alloc_ReimbNonTax_Sum = rhq_Dict[emp][10] * pct
+                            alloc_TotClientCharges_Sum = rhq_Dict[emp][11] * pct
+                            empN = rhq_Dict[emp][13]
+                            deptCode = rhq_Dict[emp][12]
+                            pedExc = rhq_Dict[emp][14]
+                            ivdExc = rhq_Dict[emp][15]
+                            # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
+                            df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
+
+
+                for emp in fc_Dict:
+                    #  
+                    if fc_Dict[emp][16] == True:
+
+                        for loc in SFOAKSVNYC:
+                            if loc == 'SF':
+                                pct = 0.45
+                            if loc == 'OAK':
+                                pct = 0.2
+                            if loc == 'SV':
+                                pct = 0.15
+                            if loc == 'NYC':
+                                pct = 0.2
+                            # Calculate Allocation Values
+                            alloc_GrossWages_Sum = fc_Dict[emp][0] * pct
+                            alloc_OT_Sum = fc_Dict[emp][1] * pct
+                            alloc_Bonus_Sum = fc_Dict[emp][2] * pct
+                            alloc_TaxesERTotals_Sum = fc_Dict[emp][3] * pct
+                            alloc_WorkersCompFeeTot_Sum = fc_Dict[emp][4] * pct
+                            alloc_Roth401kCombo_Sum = fc_Dict[emp][5] * pct
+                            alloc_BenWO401k_Sum = fc_Dict[emp][6] * pct
+                            alloc_TotalFees_Sum = fc_Dict[emp][7] * pct
+                            alloc_PTO2_Sum = fc_Dict[emp][8] * pct
+                            alloc_ElecNonTax_Sum = fc_Dict[emp][9] * pct
+                            alloc_ReimbNonTax_Sum = fc_Dict[emp][10] * pct
+                            alloc_TotClientCharges_Sum = fc_Dict[emp][11] * pct
+                            empN = fc_Dict[emp][13]
+                            deptCode = fc_Dict[emp][12]
+                            pedExc = fc_Dict[emp][14]
+                            ivdExc = fc_Dict[emp][15]
+                            # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
+                            df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
+
+                for emp in co_Dict:
+                    #
+                    if re.match('Lee,My Dung*', str(emp), re.IGNORECASE) and (co_Dict[emp][16] == True):
+                        #  Loop Through Locations in Exception List and calculate allocations.
+                        for loc in SFOAKSVNYCNEST:
+                            if loc == 'Nest':
+                                pct = 0.1
+                            if loc == 'SF':
+                                pct = 0.405
+                            if loc == 'OAK':
+                                pct = 0.18
+                            if loc == 'SV':
+                                pct = 0.135
+                            if loc == 'NYC':
+                                pct = 0.18
+                            # Calculate Allocation Values
+                            alloc_GrossWages_Sum = co_Dict[emp][0] * pct
+                            alloc_OT_Sum = co_Dict[emp][1] * pct
+                            alloc_Bonus_Sum = co_Dict[emp][2] * pct
+                            alloc_TaxesERTotals_Sum = co_Dict[emp][3] * pct
+                            alloc_WorkersCompFeeTot_Sum = co_Dict[emp][4] * pct
+                            alloc_Roth401kCombo_Sum = co_Dict[emp][5] * pct
+                            alloc_BenWO401k_Sum = co_Dict[emp][6] * pct
+                            alloc_TotalFees_Sum = co_Dict[emp][7] * pct
+                            alloc_PTO2_Sum = co_Dict[emp][8] * pct
+                            alloc_ElecNonTax_Sum = co_Dict[emp][9] * pct
+                            alloc_ReimbNonTax_Sum = co_Dict[emp][10] * pct
+                            alloc_TotClientCharges_Sum = co_Dict[emp][11] * pct
+                            empN = co_Dict[emp][13]
+                            deptCode = co_Dict[emp][12]
+                            pedExc = co_Dict[emp][14]
+                            ivdExc = co_Dict[emp][15]
+                            # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
+                            df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
+                    
+
+                    elif re.match('Lagano,Lauren*', str(emp), re.IGNORECASE) and (co_Dict[emp][16] == True):
+                    #if re.match('10328183*', str(emp)) and (co_Dict[emp][16] == True):
+                        #  Loop Through Sergio Vaccari Locations in Exception List
+                        for loc in HQNEST:
+                            pct = 0.5
+                            # Calculate Allocation Values
+                            alloc_GrossWages_Sum = co_Dict[emp][0] * pct
+                            alloc_OT_Sum = co_Dict[emp][1] * pct
+                            alloc_Bonus_Sum = co_Dict[emp][2] * pct
+                            alloc_TaxesERTotals_Sum = co_Dict[emp][3] * pct
+                            alloc_WorkersCompFeeTot_Sum = co_Dict[emp][4] * pct
+                            alloc_Roth401kCombo_Sum = co_Dict[emp][5] * pct
+                            alloc_BenWO401k_Sum = co_Dict[emp][6] * pct
+                            alloc_TotalFees_Sum = co_Dict[emp][7] * pct
+                            alloc_PTO2_Sum = co_Dict[emp][8] * pct
+                            alloc_ElecNonTax_Sum = co_Dict[emp][9] * pct
+                            alloc_ReimbNonTax_Sum = co_Dict[emp][10] * pct
+                            alloc_TotClientCharges_Sum = co_Dict[emp][11] * pct
+                            empN = co_Dict[emp][13]
+                            deptCode = co_Dict[emp][12]
+                            pedExc = co_Dict[emp][14]
+                            ivdExc = co_Dict[emp][15]
+                            # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
+                            df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
+                    
+
+
+                    else:
+                        if co_Dict[emp][16] == True:
+
+                            for loc in SFOAKSVNYC:
+                                if loc == 'SF':
+                                    pct = 0.45
+                                if loc == 'OAK':
+                                    pct = 0.2
+                                if loc == 'SV':
+                                    pct = 0.15
+                                if loc == 'NYC':
+                                    pct = 0.2
+                                # Calculate Allocation Values
+                                alloc_GrossWages_Sum = co_Dict[emp][0] * pct
+                                alloc_OT_Sum = co_Dict[emp][1] * pct
+                                alloc_Bonus_Sum = co_Dict[emp][2] * pct
+                                alloc_TaxesERTotals_Sum = co_Dict[emp][3] * pct
+                                alloc_WorkersCompFeeTot_Sum = co_Dict[emp][4] * pct
+                                alloc_Roth401kCombo_Sum = co_Dict[emp][5] * pct
+                                alloc_BenWO401k_Sum = co_Dict[emp][6] * pct
+                                alloc_TotalFees_Sum = co_Dict[emp][7] * pct
+                                alloc_PTO2_Sum = co_Dict[emp][8] * pct
+                                alloc_ElecNonTax_Sum = co_Dict[emp][9] * pct
+                                alloc_ReimbNonTax_Sum = co_Dict[emp][10] * pct
+                                alloc_TotClientCharges_Sum = co_Dict[emp][11] * pct
+                                empN = co_Dict[emp][13]
+                                deptCode = co_Dict[emp][12]
+                                pedExc = co_Dict[emp][14]
+                                ivdExc = co_Dict[emp][15]
+                                # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
+                                df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
+                                                    
+                                            
                         
  
-    
+    #print(mr_Dict)
+    #print(cc_Dict)
+    #print(exc_Dict)
+
    
     df_concatenated = pd.concat([df_spring, df_exceptions], ignore_index=True).fillna(0)
     
@@ -534,9 +755,13 @@ def main():
         """
 
         ped = r['Pay End Date']
+        # Convert data type to datetime64[ns]
+        ped = ped.astype("datetime64[ns]")
         ped_s = str(ped).split('Name', 1)[0]
         ped_s = ped_s[len(ped_s) - 11:]
         ivd = r['Invoice Date']
+        # Convert data type to datetime64[ns]
+        ivd = ivd.astype("datetime64[ns]")
         ivd_s = str(ivd).split('Name', 1)[0]
         ivd_s = ivd_s[len(ivd_s) - 11:]
         #ivd_s = re.sub(r"[a-zA-Z]","",str(ivd_s)[3:10])
