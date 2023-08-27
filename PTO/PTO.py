@@ -56,6 +56,7 @@ def main():
     HQNEST = ['HQ', 'Nest']
     SFSV = ['SF', 'SV']
     NYCMSO = ['NYC', 'MSO']
+    SFHQSV = ['SF', 'HQ', 'SV']
 
 
     # Add all Call Center People into a Dict Data Structure
@@ -105,6 +106,9 @@ def main():
                 exc_Dict[1770296] = [0, "", "", "", "", "", "", "", False]
                 #Sergio Vaccari
                 exc_Dict[1785954] = [0, "", "", "", "", "", "", "", False]
+                # Spivey,Allison Michele
+                exc_Dict[2566009] = [0, "", "", "", "", "", "", "", False]
+
                 for key in cc_Dict:
                     cc_Dict[key] = [0, "", "", "", "", "", "", "", False]
                 for key in mr_Dict:
@@ -258,11 +262,13 @@ def main():
                     #if re.match('Tran,Nam D*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
                     if re.match('1804091*', str(emp)) and (exc_Dict[emp][8] == True):
                         
-                        for loc in SFSV:
+                        for loc in SFHQSV:
                             if loc == 'SF':
-                                pct = 0.8125
-                            else:
-                                pct = 0.1875
+                                pct = 0.59
+                            if loc == 'HQ':
+                                pct = 0.1
+                            if loc == 'SV':
+                                pct = 0.31
                             alloc_ACCRUAL = exc_Dict[emp][0] * pct
                             ln = exc_Dict[emp][1]
                             fn = exc_Dict[emp][2]
@@ -306,6 +312,30 @@ def main():
                                 pct = 0.25
                             if loc == 'SV':    
                                 pct = 0.1875
+                            alloc_ACCRUAL = exc_Dict[emp][0] * pct
+                            ln = exc_Dict[emp][1]
+                            fn = exc_Dict[emp][2]
+                            sd = exc_Dict[emp][3]
+                            dc = exc_Dict[emp][4]
+                            locn = loc
+                            dld = exc_Dict[emp][6]
+                            gl = exc_Dict[emp][7]
+
+                            df_exceptions.loc[len(df_exceptions.index)] = [emp, ln, fn, sd, dc, locn, dld, gl, alloc_ACCRUAL]
+
+                    #  Spivey,Allison Michele
+                    if re.match('2566009*', str(emp)) and (exc_Dict[emp][8] == True):
+                    #if (emp == 'Vaccari,Sergio') and (exc_Dict[emp][16] == True):
+                        #  Loop Through Sergio Vaccari Locations in Exception List
+                        for loc in SFOAKSVNYC:
+                            if loc == 'SF':
+                                pct = 0.45
+                            if loc == 'OAK':
+                                pct = 0.2
+                            if loc == 'SV':    
+                                pct = 0.15
+                            if loc == 'NYC':    
+                                pct = 0.2
                             alloc_ACCRUAL = exc_Dict[emp][0] * pct
                             ln = exc_Dict[emp][1]
                             fn = exc_Dict[emp][2]
