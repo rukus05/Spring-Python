@@ -52,11 +52,13 @@ def main():
     co_Dict = {}    # Clinical Operations Dict
     SFOAKSV = ['SF', 'OAK', 'SV']
     SFOAKSVNYC = ['SF', 'OAK', 'SV', 'NYC']
+    NESTSFOAKSVPDX = ['SF', 'OAK', 'SV', 'PDX']
     SFOAKSVNYCNEST = ['SF', 'OAK', 'SV', 'NYC', 'Nest']
     HQNEST = ['HQ', 'Nest']
     SFSV = ['SF', 'SV']
     NYCMSO = ['NYC', 'MSO']
     SFHQSV = ['SF', 'HQ', 'SV']
+    NESTSF = ['Nest', 'SF']
 
 
     # Add all Call Center People into a Dict Data Structure
@@ -108,6 +110,8 @@ def main():
                 exc_Dict[1785954] = [0, "", "", "", "", "", "", "", False]
                 # Spivey,Allison Michele
                 exc_Dict[2566009] = [0, "", "", "", "", "", "", "", False]
+                #Anders,Amanda Lee
+                exc_Dict[10496651] = [0, "", "", "", "", "", "", "", False]
 
                 for key in cc_Dict:
                     cc_Dict[key] = [0, "", "", "", "", "", "", "", False]
@@ -202,16 +206,38 @@ def main():
 
 
                 for emp in exc_Dict:
-                    #if (emp == 'Krall,Audrey') or (emp == 'Dean,Ursula J'):
+                    #if (emp == 'Krall,Audrey')
                     if re.match('2495811*', str(emp)) or re.match('1906920*', str(emp)):
                         if (exc_Dict[emp][8] == True):
                             for loc in SFOAKSV:
                                 if loc == 'SF':
-                                    pct = 0.5625
+                                    pct = 0.75
                                 if loc == 'OAK':
-                                    pct = 0.25
+                                    pct = 0.125
                                 if loc == 'SV':
-                                    pct = 0.1875
+                                    pct = 0.125
+                                alloc_ACCRUAL = exc_Dict[emp][0] * pct
+                                ln = exc_Dict[emp][1]
+                                fn = exc_Dict[emp][2]
+                                sd = exc_Dict[emp][3]
+                                dc = exc_Dict[emp][4]
+                                locn = loc
+                                dld = exc_Dict[emp][6]
+                                gl = exc_Dict[emp][7]
+
+                                df_exceptions.loc[len(df_exceptions.index)] = [emp, ln, fn, sd, dc, locn, dld, gl, alloc_ACCRUAL]
+                
+                for emp in exc_Dict:
+                    #(emp == 'Dean,Ursula J'):
+                    if re.match('1906920*', str(emp)):
+                        if (exc_Dict[emp][8] == True):
+                            for loc in SFOAKSV:
+                                if loc == 'SF':
+                                    pct = 0.125
+                                if loc == 'OAK':
+                                    pct = 0.125
+                                if loc == 'SV':
+                                    pct = 0.75
                                 alloc_ACCRUAL = exc_Dict[emp][0] * pct
                                 ln = exc_Dict[emp][1]
                                 fn = exc_Dict[emp][2]
@@ -305,13 +331,15 @@ def main():
                     if re.match('1785954*', str(emp)) and (exc_Dict[emp][8] == True):
                     #if (emp == 'Vaccari,Sergio') and (exc_Dict[emp][16] == True):
                         #  Loop Through Sergio Vaccari Locations in Exception List
-                        for loc in SFOAKSV:
+                        for loc in SFOAKSVNYC:
                             if loc == 'SF':
-                                pct = 0.5625
+                                pct = 0.45
                             if loc == 'OAK':
-                                pct = 0.25
+                                pct = 0.2
                             if loc == 'SV':    
-                                pct = 0.1875
+                                pct = 0.15
+                            if loc == 'NYC':    
+                                pct = 0.2
                             alloc_ACCRUAL = exc_Dict[emp][0] * pct
                             ln = exc_Dict[emp][1]
                             fn = exc_Dict[emp][2]
@@ -336,6 +364,26 @@ def main():
                                 pct = 0.15
                             if loc == 'NYC':    
                                 pct = 0.2
+                            alloc_ACCRUAL = exc_Dict[emp][0] * pct
+                            ln = exc_Dict[emp][1]
+                            fn = exc_Dict[emp][2]
+                            sd = exc_Dict[emp][3]
+                            dc = exc_Dict[emp][4]
+                            locn = loc
+                            dld = exc_Dict[emp][6]
+                            gl = exc_Dict[emp][7]
+
+                            df_exceptions.loc[len(df_exceptions.index)] = [emp, ln, fn, sd, dc, locn, dld, gl, alloc_ACCRUAL]
+                    
+                    # Anders,Amanda Lee
+                    if re.match('10496651*', str(emp)) and (exc_Dict[emp][8] == True):
+                    #if (emp == 'Vaccari,Sergio') and (exc_Dict[emp][16] == True):
+                        #  Loop Through Sergio Vaccari Locations in Exception List
+                        for loc in NESTSF:
+                            if loc == 'Nest':
+                                pct = 0.25
+                            if loc == 'SF':
+                                pct = 0.75
                             alloc_ACCRUAL = exc_Dict[emp][0] * pct
                             ln = exc_Dict[emp][1]
                             fn = exc_Dict[emp][2]
@@ -458,17 +506,17 @@ def main():
                 for emp in co_Dict:
                     #  My Dung Lee
                     if re.match('1788698*', str(emp)) and (co_Dict[emp][8] == True):
-                        for loc in SFOAKSVNYCNEST:
+                        for loc in NESTSFOAKSVPDX:
                             if loc == 'Nest':
-                                pct = 0.1
+                                pct = 0.05
                             if loc == 'SF':
-                                pct = 0.405
+                                pct = 0.25
                             if loc == 'OAK':
-                                pct = 0.18
+                                pct = 0.2
                             if loc == 'SV':
-                                pct = 0.135
-                            if loc == 'NYC':
-                                pct = 0.18
+                                pct = 0.3
+                            if loc == 'PDX':
+                                pct = 0.2
                             alloc_ACCRUAL = co_Dict[emp][0] * pct
                             ln = co_Dict[emp][1]
                             fn = co_Dict[emp][2]
