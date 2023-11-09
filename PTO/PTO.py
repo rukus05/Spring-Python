@@ -52,7 +52,7 @@ def main():
     co_Dict = {}    # Clinical Operations Dict
     SFOAKSV = ['SF', 'OAK', 'SV']
     SFOAKSVNYC = ['SF', 'OAK', 'SV', 'NYC']
-    NESTSFOAKSVPDX = ['SF', 'OAK', 'SV', 'PDX']
+    NESTSFOAKSVPDX = ['Nest','SF', 'OAK', 'SV', 'PDX']
     SFOAKSVNYCNEST = ['SF', 'OAK', 'SV', 'NYC', 'Nest']
     HQNEST = ['HQ', 'Nest']
     SFSV = ['SF', 'SV']
@@ -110,8 +110,10 @@ def main():
                 exc_Dict[1785954] = [0, "", "", "", "", "", "", "", False]
                 # Spivey,Allison Michele
                 exc_Dict[2566009] = [0, "", "", "", "", "", "", "", False]
-                #Anders,Amanda Lee
+                # Anders,Amanda Lee
                 exc_Dict[10496651] = [0, "", "", "", "", "", "", "", False]
+                # Julia Conant
+                exc_Dict[10397087] = [0, "", "", "", "", "", "", "", False]
 
                 for key in cc_Dict:
                     cc_Dict[key] = [0, "", "", "", "", "", "", "", False]
@@ -248,43 +250,7 @@ def main():
                                 gl = exc_Dict[emp][7]
 
                                 df_exceptions.loc[len(df_exceptions.index)] = [emp, ln, fn, sd, dc, locn, dld, gl, alloc_ACCRUAL]
-                    '''
-                    ### These 2 if statements are now covered by co_Dict###
-
-                    #if re.match('Dam,Phuong*', str(emp), re.IGNORECASE) or re.match('Trieu,Minh*', str(emp), re.IGNORECASE) or re.match('Bell,Allie*', str(emp), re.IGNORECASE):
-                    if re.match('2167864*', str(emp)) or re.match('1796892*', str(emp)) or re.match('1792388*', str(emp)):
-                        if (exc_Dict[emp][8] == True):
-                            for loc in SFOAKSVNYC:
-                                pct = 0.25
-                                alloc_ACCRUAL = exc_Dict[emp][0] * pct
-                                ln = exc_Dict[emp][1]
-                                fn = exc_Dict[emp][2]
-                                sd = exc_Dict[emp][3]
-                                dc = exc_Dict[emp][4]
-                                locn = loc
-                                dld = exc_Dict[emp][6]
-                                gl = exc_Dict[emp][7]
-                                
-                                df_exceptions.loc[len(df_exceptions.index)] = [emp, ln, fn, sd, dc, locn, dld, gl, alloc_ACCRUAL]
-                            
-                    #if re.match('Lee,My Dung*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
-                    if re.match('1788698*', str(emp)) and (exc_Dict[emp][8] == True):
-                        for loc in SFOAKSVNYCNEST:
-                            if loc == 'Nest':
-                                pct = 0.1
-                            else:
-                                pct = 0.225
-                            alloc_ACCRUAL = exc_Dict[emp][0] * pct
-                            ln = exc_Dict[emp][1]
-                            fn = exc_Dict[emp][2]
-                            sd = exc_Dict[emp][3]
-                            dc = exc_Dict[emp][4]
-                            locn = loc
-                            dld = exc_Dict[emp][6]
-                            gl = exc_Dict[emp][7]
-
-                            df_exceptions.loc[len(df_exceptions.index)] = [emp, ln, fn, sd, dc, locn, dld, gl, alloc_ACCRUAL]
-                    '''
+                    
                     #if re.match('Tran,Nam D*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
                     if re.match('1804091*', str(emp)) and (exc_Dict[emp][8] == True):
                         
@@ -353,6 +319,29 @@ def main():
 
                     #  Spivey,Allison Michele
                     if re.match('2566009*', str(emp)) and (exc_Dict[emp][8] == True):
+                    #if (emp == 'Vaccari,Sergio') and (exc_Dict[emp][16] == True):
+                        #  Loop Through Sergio Vaccari Locations in Exception List
+                        for loc in SFOAKSVNYC:
+                            if loc == 'SF':
+                                pct = 0.45
+                            if loc == 'OAK':
+                                pct = 0.2
+                            if loc == 'SV':    
+                                pct = 0.15
+                            if loc == 'NYC':    
+                                pct = 0.2
+                            alloc_ACCRUAL = exc_Dict[emp][0] * pct
+                            ln = exc_Dict[emp][1]
+                            fn = exc_Dict[emp][2]
+                            sd = exc_Dict[emp][3]
+                            dc = exc_Dict[emp][4]
+                            locn = loc
+                            dld = exc_Dict[emp][6]
+                            gl = exc_Dict[emp][7]
+
+                            df_exceptions.loc[len(df_exceptions.index)] = [emp, ln, fn, sd, dc, locn, dld, gl, alloc_ACCRUAL]
+                    # Julia Conant
+                    if re.match('10397087*', str(emp)) and (exc_Dict[emp][8] == True):
                     #if (emp == 'Vaccari,Sergio') and (exc_Dict[emp][16] == True):
                         #  Loop Through Sergio Vaccari Locations in Exception List
                         for loc in SFOAKSVNYC:
@@ -540,7 +529,28 @@ def main():
                             dld = co_Dict[emp][6]
                             gl = co_Dict[emp][7]
                             df_exceptions.loc[len(df_exceptions.index)] = [emp, ln, fn, sd, dc, locn, dld, gl, alloc_ACCRUAL]
+                    # Ellen Dungy
+                    elif re.match('10655663*', str(emp)) and (co_Dict[emp][8] == True):
+                        for loc in SFOAKSVNYC:
+                            if loc == 'SF':
+                                pct = 0.45
+                            if loc == 'OAK':
+                                pct = 0.2
+                            if loc == 'SV':    
+                                pct = 0.15
+                            if loc == 'NYC':
+                                pct = 0.2
+                            alloc_ACCRUAL = co_Dict[emp][0] * pct
+                            ln = co_Dict[emp][1]
+                            fn = co_Dict[emp][2]
+                            sd = co_Dict[emp][3]
+                            dc = co_Dict[emp][4]
+                            locn = loc
+                            dld = co_Dict[emp][6]
+                            gl = co_Dict[emp][7]
+                            df_exceptions.loc[len(df_exceptions.index)] = [emp, ln, fn, sd, dc, locn, dld, gl, alloc_ACCRUAL]
                     
+
                     else:
                         if co_Dict[emp][8] == True:
                              for loc in SFOAKSVNYC:

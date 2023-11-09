@@ -68,7 +68,7 @@ def main():
     SFOAKSV = ['SF', 'OAK', 'SV']
     SFHQSV = ['SF', 'HQ', 'SV']
     SFOAKSVNYC = ['SF', 'OAK', 'SV', 'NYC']
-    NESTSFOAKSVPDX = ['SF', 'OAK', 'SV', 'PDX']
+    NESTSFOAKSVPDX = ['Nest','SF', 'OAK', 'SV', 'PDX']
     SFOAKSVNYCNEST = ['SF', 'OAK', 'SV', 'NYC', 'Nest']
     HQNEST = ['HQ', 'Nest']
     SFSV = ['SF', 'SV']
@@ -141,6 +141,7 @@ def main():
                 exc_Dict["Vaccari,Sergio"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 exc_Dict["Spivey,Allison Michele"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
                 exc_Dict["Anders,Amanda Lee"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
+                exc_Dict["Conant,Julia"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", False]
 
                 ##
                 ##  The below for loops may be redundant--> logic executed in rows 92 & 95
@@ -477,10 +478,10 @@ def main():
                             df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
                     
                     if re.match('Anders,Amanda Lee*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
-                    #if re.match('1785954*', str(emp)) and (exc_Dict[emp][16] == True):
+                    #if re.match('10496651*', str(emp)) and (exc_Dict[emp][16] == True):
                         #  Loop Through Sergio Vaccari Locations in Exception List
                         for loc in NESTSF:
-                            if loc == 'NEST':
+                            if loc == 'Nest':
                                 pct = 0.25
                             if loc == 'SF':
                                 pct = 0.75
@@ -503,8 +504,42 @@ def main():
                             ivdExc = exc_Dict[emp][15]
                             # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
                             df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
-                   
-                
+                    
+
+                    if re.match('Conant,Julia*', str(emp), re.IGNORECASE) and (exc_Dict[emp][16] == True):
+                    #if re.match('1785954*', str(emp)) and (exc_Dict[emp][16] == True):
+                        #  Loop Through Sergio Vaccari Locations in Exception List
+                        for loc in SFOAKSVNYC:
+                            if loc == 'SF':
+                                pct = 0.45
+                            if loc == 'OAK':
+                                pct = 0.2
+                            if loc == 'SV':    
+                                pct = 0.15
+                            if loc == 'NYC':    
+                                pct = 0.2
+                            # Calculate Allocation Values
+                            alloc_GrossWages_Sum = exc_Dict[emp][0] * pct
+                            alloc_OT_Sum = exc_Dict[emp][1] * pct
+                            alloc_Bonus_Sum = exc_Dict[emp][2] * pct
+                            alloc_TaxesERTotals_Sum = exc_Dict[emp][3] * pct
+                            alloc_WorkersCompFeeTot_Sum = exc_Dict[emp][4] * pct
+                            alloc_Roth401kCombo_Sum = exc_Dict[emp][5] * pct
+                            alloc_BenWO401k_Sum = exc_Dict[emp][6] * pct
+                            alloc_TotalFees_Sum = exc_Dict[emp][7] * pct
+                            alloc_PTO2_Sum = exc_Dict[emp][8] * pct
+                            alloc_ElecNonTax_Sum = exc_Dict[emp][9] * pct
+                            alloc_ReimbNonTax_Sum = exc_Dict[emp][10] * pct
+                            alloc_TotClientCharges_Sum = exc_Dict[emp][11] * pct
+                            empN = exc_Dict[emp][13]
+                            deptCode = exc_Dict[emp][12]
+                            pedExc = exc_Dict[emp][14]
+                            ivdExc = exc_Dict[emp][15]
+                            # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
+                            df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
+
+
+                                   
                 for emp in cc_Dict:
                     #  
                     if cc_Dict[emp][16] == True:
@@ -704,6 +739,39 @@ def main():
                             # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
                             df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
                     
+                    elif re.match('Dungy,Ellen*', str(emp), re.IGNORECASE) and (co_Dict[emp][16] == True):
+                    #if re.match('10328183*', str(emp)) and (co_Dict[emp][16] == True):
+                        #  Loop Through Sergio Vaccari Locations in Exception List
+                        for loc in SFOAKSVNYC:
+                            if loc == 'SF':
+                                pct = 0.45
+                            if loc == 'OAK':
+                                pct = 0.2
+                            if loc == 'SV':
+                                pct = 0.15
+                            if loc == 'NYC':
+                                pct = 0.2
+                            # Calculate Allocation Values
+                            alloc_GrossWages_Sum = co_Dict[emp][0] * pct
+                            alloc_OT_Sum = co_Dict[emp][1] * pct
+                            alloc_Bonus_Sum = co_Dict[emp][2] * pct
+                            alloc_TaxesERTotals_Sum = co_Dict[emp][3] * pct
+                            alloc_WorkersCompFeeTot_Sum = co_Dict[emp][4] * pct
+                            alloc_Roth401kCombo_Sum = co_Dict[emp][5] * pct
+                            alloc_BenWO401k_Sum = co_Dict[emp][6] * pct
+                            alloc_TotalFees_Sum = co_Dict[emp][7] * pct
+                            alloc_PTO2_Sum = co_Dict[emp][8] * pct
+                            alloc_ElecNonTax_Sum = co_Dict[emp][9] * pct
+                            alloc_ReimbNonTax_Sum = co_Dict[emp][10] * pct
+                            alloc_TotClientCharges_Sum = co_Dict[emp][11] * pct
+                            empN = co_Dict[emp][13]
+                            deptCode = co_Dict[emp][12]
+                            pedExc = co_Dict[emp][14]
+                            ivdExc = co_Dict[emp][15]
+                            # Each Row in the loop will be a debit entry for a particular sum variable (as defined above)
+                            df_exceptions.loc[len(df_exceptions.index)] = [empN, i, pedExc, ivdExc, loc, k, j, deptCode,  alloc_GrossWages_Sum, alloc_OT_Sum, alloc_Bonus_Sum, alloc_TaxesERTotals_Sum, alloc_WorkersCompFeeTot_Sum, alloc_Roth401kCombo_Sum, alloc_BenWO401k_Sum,  alloc_TotalFees_Sum, alloc_PTO2_Sum, alloc_ElecNonTax_Sum, alloc_ReimbNonTax_Sum, alloc_TotClientCharges_Sum]
+                    
+                    
 
 
                     else:
@@ -784,7 +852,7 @@ def main():
             CoA_Index = 3
         elif name[2] == 'Operating':
             CoA_Index = 4
-        elif name[2] == 'NEST':
+        elif name[2] == 'Nest':
             CoA_Index = 5
         elif name[2] == 'MD':
             CoA_Index = 6
