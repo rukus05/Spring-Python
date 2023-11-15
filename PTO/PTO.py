@@ -209,7 +209,7 @@ def main():
 
                 for emp in exc_Dict:
                     #if (emp == 'Krall,Audrey')
-                    if re.match('2495811*', str(emp)) or re.match('1906920*', str(emp)):
+                    if re.match('2495811*', str(emp)):
                         if (exc_Dict[emp][8] == True):
                             for loc in SFOAKSV:
                                 if loc == 'SF':
