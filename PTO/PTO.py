@@ -39,7 +39,7 @@ def main():
     
     
     # Create new Dataframe for the Exceptions Output.
-    df_exceptions = pd.DataFrame(columns=['Employee Number', 'Last Name', 'First Name', 'SUB_DEPARTMENT', 'DEPT CODE', 'LOCATION', 'Department Long Descr', 'GL Code', 'ACCRUAL'])
+    df_exceptions = pd.DataFrame(columns=['Employee Number', 'Last Name', 'First Name', 'SUB_DEPARTMENT', 'DEPT CODE', 'LOCATION', 'Department Long Descr', 'GL Account', 'ACCRUAL'])
     
 
     
@@ -137,7 +137,7 @@ def main():
                                 exc_Dict[key][4] = row['DEPT CODE']
                                 exc_Dict[key][5] = row['LOCATION']
                                 exc_Dict[key][6] = row['Department Long Descr']
-                                exc_Dict[key][7] = row['GL Code']
+                                exc_Dict[key][7] = row['GL Account']
                                 exc_Dict[key][8] = True
                                 df_spring = df_spring.drop(index)
 
@@ -150,7 +150,7 @@ def main():
                                 cc_Dict[key2][4] = row['DEPT CODE']
                                 cc_Dict[key2][5] = row['LOCATION']
                                 cc_Dict[key2][6] = row['Department Long Descr']
-                                cc_Dict[key2][7] = row['GL Code']
+                                cc_Dict[key2][7] = row['GL Account']
                                 cc_Dict[key2][8] = True
                                 df_spring = df_spring.drop(index)
 
@@ -163,7 +163,7 @@ def main():
                                 mr_Dict[key3][4] = row['DEPT CODE']
                                 mr_Dict[key3][5] = row['LOCATION']
                                 mr_Dict[key3][6] = row['Department Long Descr']
-                                mr_Dict[key3][7] = row['GL Code']
+                                mr_Dict[key3][7] = row['GL Account']
                                 mr_Dict[key3][8] = True
                                 df_spring = df_spring.drop(index)
                         
@@ -176,7 +176,7 @@ def main():
                                 rhq_Dict[key4][4] = row['DEPT CODE']
                                 rhq_Dict[key4][5] = row['LOCATION']
                                 rhq_Dict[key4][6] = row['Department Long Descr']
-                                rhq_Dict[key4][7] = row['GL Code']
+                                rhq_Dict[key4][7] = row['GL Account']
                                 rhq_Dict[key4][8] = True
                                 df_spring = df_spring.drop(index)
 
@@ -189,7 +189,7 @@ def main():
                                 fc_Dict[key5][4] = row['DEPT CODE']
                                 fc_Dict[key5][5] = row['LOCATION']
                                 fc_Dict[key5][6] = row['Department Long Descr']
-                                fc_Dict[key5][7] = row['GL Code']
+                                fc_Dict[key5][7] = row['GL Account']
                                 fc_Dict[key5][8] = True
                                 df_spring = df_spring.drop(index)
 
@@ -202,7 +202,7 @@ def main():
                                 co_Dict[key6][4] = row['DEPT CODE']
                                 co_Dict[key6][5] = row['LOCATION']
                                 co_Dict[key6][6] = row['Department Long Descr']
-                                co_Dict[key6][7] = row['GL Code']
+                                co_Dict[key6][7] = row['GL Account']
                                 co_Dict[key6][8] = True
                                 df_spring = df_spring.drop(index)
 
@@ -605,7 +605,7 @@ def main():
                     if (row['SUB_DEPARTMENT'] == i) and (row['LOCATION'] == j) and (row['DEPT CODE'] == k):
                         # Sum up the pertinent columns.
                         Accrual_Sum = Accrual_Sum + row['ACCRUAL']
-                        glCode = row['GL Code']
+                        glCode = row['GL Account']
                         deptCode = row['DEPT CODE']
                         comment = row['Department Long Descr']
                         #subDept = row['SUB_DEPARTMENT']
