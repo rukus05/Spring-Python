@@ -1,5 +1,6 @@
-from GetTables import create_empalloc_dict as cea
-from GetTables import create_deptalloc_dict as dea
+from GetTables import create_empalloc_dict
+from GetTables import create_deptalloc_dict
+from GetTables import deptcode_to_subdept as dts
 from msilib.schema import File
 import time
 import pandas as pd
@@ -26,16 +27,17 @@ def main():
     allocf = FilePrompt()
     df_ea = pd.read_excel(allocf)
     df_ea = df_ea.reset_index()
-    emp_alloc_dict = cea(df_ea)
-    print("Here's the Employee Allocations")
-    print(emp_alloc_dict)
-    print('\n\n')
-    print("Here's the Employee Allocations")
-    dept_alloc_dict = dea(df_ea)
-    print(dept_alloc_dict)
+
+    # Pass dataframe to create_empalloc_dict function to create employee allocations dictionary
+    emp_alloc_dict = create_empalloc_dict(df_ea)
+    # Pass dataframe to create_deptalloc_dict function to create department allocations dictionary
+    dept_alloc_dict = create_deptalloc_dict(df_ea)
+    
+
 
 
     # Open input file
+    print("Select the current Input File:")
     inputf = FilePrompt()
     df = pd.read_excel(inputf)
     df = df.reset_index()
