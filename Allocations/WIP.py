@@ -1,6 +1,8 @@
 from GetTables import create_empalloc_dict
 from GetTables import create_deptalloc_dict
-from GetTables import deptcode_to_subdept as dts
+from GetTables import deptcode_to_subdept
+from GetTables import entity_tagging
+from GetTables import chart_of_accounts
 from msilib.schema import File
 import time
 import pandas as pd
@@ -33,11 +35,34 @@ def main():
     # Pass dataframe to create_deptalloc_dict function to create department allocations dictionary
     dept_alloc_dict = create_deptalloc_dict(df_ea)
     
+    # Prompt user for file containg Dept Code to Sub Dept mappings
+    print("Select the current Dept Code to Sub Dept Mappings File:")
+    mappingsf = FilePrompt()
+    deptcodetosubmappings_df = pd.read_excel(mappingsf)
+    deptcodetosubmappings_df = deptcodetosubmappings_df.reset_index()
+    # Pass the dept code submappings dataframe to the deptcode_to_subdept function to create the dept code 
+    # to sub dept dictionary
+    deptcodetosub_dict = deptcode_to_subdept(deptcodetosubmappings_df)
+    #print(deptcodetosub_dict)
+    # Prompt user for the entity tagging file.
+    print("Select the Entity Tagging File:")
+    entityf = FilePrompt()
+    entitytagging_df = pd.read_excel(entityf)
+    entitytagging_df = entitytagging_df.reset_index()
+    # Pass the entity tagging dataframe to the deptcode_to_subdept function to create the dept code
+    entitytagging_dict = entity_tagging(entitytagging_df)
 
+    # Prompt user for Chart of Accounts File
+    print("Select the Chart of Accounts File:")
+    coaf = FilePrompt()
+    coa_df = pd.read_excel(coaf)
+    coa_df = coa_df.reset_index()
+    coa_dict = chart_of_accounts(coa_df)
 
+    #print(coa_dict)
 
-    # Open input file
-    print("Select the current Input File:")
+    # Prompt user for Input file
+    print("Select the Input File which your running Payroll Allocations for:")
     inputf = FilePrompt()
     df = pd.read_excel(inputf)
     df = df.reset_index()
@@ -169,9 +194,11 @@ def main():
         #                                        'DebitAmt', 'CreditAmt', 'Loc', 'Dept','Provider', 'Service Line', 'Comments'])
 
         for v in all_values:
+            
             if row[v] != 0.0:
                 df_allocations.loc[len(df_allocations.index)] = [row['COMPANY CODE'], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
-                                                                'AcctNo', ' ', 'Description', ' ', row[v], row['Office Reporting Location'], 'Dept', \
+                                                                str(coa_dict[row['Sub Department']][v]), ' ', 'Description', ' ', row[v], row['Office Reporting Location'], \
+                                                                '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                 'NULL', 'NULL', 'Comments']
                 for l in all_locations:
                     if l == 'HQ':
@@ -191,8 +218,8 @@ def main():
                     
                     if pct != 0.0:
                         allocated_value = row[v]*pct
-                        df_allocations.loc[len(df_allocations.index)] = [row['COMPANY CODE'], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
-                                                                'AcctNo', ' ', 'Description', allocated_value , ' ', l, 'Dept', \
+                        df_allocations.loc[len(df_allocations.index)] = [entitytagging_dict[row['COMPANY CODE']][l], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
+                                                                coa_dict[row['Sub Department']][v], ' ', 'Description', allocated_value , ' ', l, '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                 'NULL', 'NULL', 'Comments']
 
             
