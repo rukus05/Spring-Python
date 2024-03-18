@@ -63,6 +63,7 @@ def entity_tagging(input_df):
 
     for index, row in input_df.iterrows():
         entity_tag_dict[row['Company Code']] = {
+            'HQ': row['HQ'],
             'Nest': row['Nest'],
             'SF': row['SF'],
             'OAK': row['OAK'],
