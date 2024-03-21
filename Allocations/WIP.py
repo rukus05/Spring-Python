@@ -78,12 +78,17 @@ def main():
     df['MEMO : KM-401K SH MATCH'] = df['MEMO : KM-401K SH MATCH'].fillna(0)
 
 
-    # Create new Dataframe for the Allocations Output.
-    df_allocations = pd.DataFrame(columns=['Entity', 'PostDate', 'DocDate', 'AcctType', 'AcctNo', 'AcctName', 'Description', \
+    # Create new Dataframe for the Employee Allocations Output.
+    df_emp_allocations = pd.DataFrame(columns=['Entity', 'PostDate', 'DocDate', 'AcctType', 'AcctNo', 'AcctName', 'Description', \
+                                           'DebitAmt', 'CreditAmt', 'Loc', 'Dept','Provider', 'Service Line', 'Comments'])
+    # Create new Dataframe for the Dept Allocations Output.
+    df_dept_allocations = pd.DataFrame(columns=['Entity', 'PostDate', 'DocDate', 'AcctType', 'AcctNo', 'AcctName', 'Description', \
                                            'DebitAmt', 'CreditAmt', 'Loc', 'Dept','Provider', 'Service Line', 'Comments'])
     
     # Create a list of all Locations
     all_locations = ['HQ', 'Nest', 'SF', 'OAK', 'SV', 'NYC', 'PDX']
+    # Create list for ALlocated depts
+    all_alloc_depts = ['Receptionish HQ', 'Medical Records', 'Call Center', 'Financial  Counselor', 'Clinical Operations']
     # Create a list of all values to allocate
     all_values = ['GROSS PAY less PTO USED, Bonus, OT', 'OT', 'VOLUNTARY DEDUCTION : ELC-ELECTRONICS RMB', 'TOTAL EMPLOYER TAX', \
                      'MEMO : KM-401K SH MATCH']
@@ -92,13 +97,22 @@ def main():
         pid = str(row['POSITION ID'])
         print(pid)
         dept = row['Department']
-        hq_percent = 0
-        nest_percent = 0
-        sf_percent = 0
-        oak_percent = 0
-        sv_percent = 0
-        nyc_percent = 0
-        pdx_percent = 0
+        # Intialize employee percentages variables
+        emp_hq_percent = 0
+        emp_nest_percent = 0
+        emp_sf_percent = 0
+        emp_oak_percent = 0
+        emp_sv_percent = 0
+        emp_nyc_percent = 0
+        emp_pdx_percent = 0
+        # Intialize department percentages variables
+        dept_hq_percent = 0
+        dept_nest_percent = 0
+        dept_sf_percent = 0
+        dept_oak_percent = 0
+        dept_sv_percent = 0
+        dept_nyc_percent = 0
+        dept_pdx_percent = 0
         # Check if dept is Receptionist HQ. If so, check if there is a seperate allocation for the employee. (2nd if)
         # If so, use the % as defined in the dictionary when create_empalloc_dict is called.
         # If not, use the % as defined in the dictionary when create_deptalloc_dict is called.
@@ -207,7 +221,7 @@ def main():
             
             if row[v] != 0.0:
                 if pid in emp_alloc_dict:  # if employee has allocation, use that allocation.  if not, use department allocatioin 
-                    df_allocations.loc[len(df_allocations.index)] = [row['COMPANY CODE'], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
+                    df_emp_allocations.loc[len(df_emp_allocations.index)] = [row['COMPANY CODE'], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
                                                                     str(coa_dict[row['Sub Department']][v]), ' ', 'Description', ' ', row[v], row['Office Reporting Location'], \
                                                                     '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                     'NULL', 'NULL', 'Comments']
@@ -229,18 +243,58 @@ def main():
                         
                         if pct != 0.0:
                             allocated_value = row[v]*pct
-                            df_allocations.loc[len(df_allocations.index)] = [entitytagging_dict[row['COMPANY CODE']][l], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
+                            df_emp_allocations.loc[len(df_emp_allocations.index)] = [entitytagging_dict[row['COMPANY CODE']][l], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
+                                                                    coa_dict[row['Sub Department']][v], ' ', 'Description', allocated_value , ' ', l, '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
+                                                                    'NULL', 'NULL', 'Comments']
+                elif dept in all_alloc_depts:
+                    print("Dept Hit")
+                    df_dept_allocations.loc[len(df_dept_allocations.index)] = [row['COMPANY CODE'], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
+                                                                    str(coa_dict[row['Sub Department']][v]), ' ', 'Description', ' ', row[v], row['Office Reporting Location'], \
+                                                                    '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
+                                                                    'NULL', 'NULL', 'Comments']
+                    for l in all_locations:
+                        if l == 'HQ':
+                            pct = hq_percent
+                        elif l == 'Nest':
+                            pct = nest_percent
+                        elif l == 'SF':
+                            pct = sf_percent
+                        elif l == 'OAK':
+                            pct = oak_percent
+                        elif l == 'SV':
+                            pct = sv_percent
+                        elif l == 'NYC':
+                            pct = nyc_percent
+                        elif l == 'PDX':
+                            pct = pdx_percent
+                        
+                        if pct != 0.0:
+                            allocated_value = row[v]*pct
+                            df_dept_allocations.loc[len(df_dept_allocations.index)] = [entitytagging_dict[row['COMPANY CODE']][l], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
                                                                     coa_dict[row['Sub Department']][v], ' ', 'Description', allocated_value , ' ', l, '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                     'NULL', 'NULL', 'Comments']
 
-            
-     # Start the "Save As" dialog box.
+    print(df_dept_allocations)
+    # Start the "Save As" dialog box for the Employee Allocations.
+    print("Save the Employee Allocations Output.")                            
     app = tk.Tk()
     app.title("Save File As")
     status_label = tk.Label(app, text="", fg="green")
     status_label.pack()
-    save_button = tk.Button(app, text="Save as", command=save_dataframe(df_allocations, status_label))
+    save_button = tk.Button(app, text="Save as", command=save_dataframe(df_emp_allocations, status_label))
     save_button.pack(padx=20, pady=10)
+
+    
+    # Check if the dept allocations file is empty.
+    if len(df_dept_allocations) > 0:
+        # Start the "Save As" dialog box for the Employee Allocations
+        print("Save the Dept Allocations Output.")                            
+        app = tk.Tk()
+        app.title("Save File As")
+        status_label = tk.Label(app, text="", fg="green")
+        status_label.pack()
+        save_button = tk.Button(app, text="Save as", command=save_dataframe(df_dept_allocations, status_label))
+        save_button.pack(padx=20, pady=10)
 
     # Calculate the execution time.
     runningtime = time.time() - start
