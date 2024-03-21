@@ -32,10 +32,10 @@ def main():
 
     # Pass dataframe to create_empalloc_dict function to create employee allocations dictionary
     emp_alloc_dict = create_empalloc_dict(df_ea)
-    #print(emp_alloc_dict)
+    print(emp_alloc_dict)
     # Pass dataframe to create_deptalloc_dict function to create department allocations dictionary
     dept_alloc_dict = create_deptalloc_dict(df_ea)
-    print(dept_alloc_dict)
+    #print(dept_alloc_dict)
     
     # Prompt user for file containg Dept Code to Sub Dept mappings
     print("Select the current Dept Code to Sub Dept Mappings File:")
