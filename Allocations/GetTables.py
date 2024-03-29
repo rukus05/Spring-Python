@@ -15,7 +15,7 @@ def create_empalloc_dict(input_df):
         # 'ALL' is used to designate the department allocations, addressed below.
         if row['Employee Name'] != 'ALL':
             ea_dict[row['POSITION ID']] = {
-                'HQ': row['HQ'],
+                'SFM MSO': row['SFM MSO'],
                 'Nest': row['Nest'],
                 'SF': row['SF'],
                 'OAK': row['OAK'],
@@ -34,7 +34,7 @@ def create_deptalloc_dict(input_df):
     for index, row in input_df.iterrows():
         if row['Employee Name'] == 'ALL':
             dept_dict[row['Department Long Descr']] = {
-                'HQ': row['HQ'],
+                'SFM MSO': row['SFM MSO'],
                 'Nest': row['Nest'],
                 'SF': row['SF'],
                 'OAK': row['OAK'],
@@ -63,7 +63,7 @@ def entity_tagging(input_df):
 
     for index, row in input_df.iterrows():
         entity_tag_dict[row['Company Code']] = {
-            'HQ': row['HQ'],
+            'SFM MSO': row['SFM MSO'],
             'Nest': row['Nest'],
             'SF': row['SF'],
             'OAK': row['OAK'],

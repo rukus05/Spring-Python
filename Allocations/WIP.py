@@ -79,25 +79,28 @@ def main():
 
 
     # Create new Dataframe for the Employee Allocations Output.
-    df_emp_allocations = pd.DataFrame(columns=['Entity', 'PostDate', 'DocDate', 'AcctType', 'AcctNo', 'AcctName', 'Description', \
+    df_emp_allocations = pd.DataFrame(columns=['Entity Template', 'Entity', 'PostDate', 'DocDate', 'AcctType', 'AcctNo', 'AcctName', 'Description', \
                                            'DebitAmt', 'CreditAmt', 'Loc', 'Dept','Provider', 'Service Line', 'Comments'])
     # Create new Dataframe for the Dept Allocations Output.
-    df_dept_allocations = pd.DataFrame(columns=['Entity', 'PostDate', 'DocDate', 'AcctType', 'AcctNo', 'AcctName', 'Description', \
+    df_dept_allocations = pd.DataFrame(columns=['Entity Template', 'Entity', 'PostDate', 'DocDate', 'AcctType', 'AcctNo', 'AcctName', 'Description', \
                                            'DebitAmt', 'CreditAmt', 'Loc', 'Dept','Provider', 'Service Line', 'Comments'])
     
     # Capture home payroll company of the file.
     if str(df.loc[1, 'COMPANY CODE'])  == '362':
-        hc = '008'
+        hc = '362'
+        ent_template = '008'
     elif str(df.loc[1, 'COMPANY CODE'])  == '22J':
-        hc = '007'
+        hc = '22J'
+        ent_template = '007'
     elif str(df.loc[1, 'COMPANY CODE']) == 'ML7':
-        hc = '002'
+        hc = 'ML7'
+        ent_template = '002'
     
     #print(hc)
     # Create a list of all Locations
-    all_locations = ['HQ', 'Nest', 'SF', 'OAK', 'SV', 'NYC', 'PDX']
+    all_locations = ['SFM MSO', 'Nest', 'SF', 'OAK', 'SV', 'NYC', 'PDX']
     # Create list for ALlocated depts
-    all_alloc_depts = ['Receptionish HQ', 'Medical Records', 'Call Center', 'Financial  Counselor', 'Clinical Operations']
+    all_alloc_depts = ['Receptionist HQ', 'Medical Records', 'Call Center', 'Financial Counselor', 'Clinical Operations', 'Revenue Cycle']
     # Create a list of all values to allocate
     all_values = ['GROSS PAY less PTO USED, Bonus, OT', 'OT', 'VOLUNTARY DEDUCTION : ELC-ELECTRONICS RMB', 'TOTAL EMPLOYER TAX', \
                      'MEMO : KM-401K SH MATCH']
@@ -106,6 +109,7 @@ def main():
         pid = str(row['POSITION ID'])
         #print(pid)
         dept = row['Department']
+        cc = row['COMPANY CODE']
         # Intialize employee percentages variables
         emp_hq_percent = 0
         emp_nest_percent = 0
@@ -128,7 +132,7 @@ def main():
         # This process repeats for other depts.  If we don't match any of these, use the emp allocation; last else statement below.
         if dept == 'Receptionist HQ':
             if pid in emp_alloc_dict:
-                hq_percent = emp_alloc_dict[pid]['HQ']
+                hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
                 sf_percent = emp_alloc_dict[pid]['SF']
                 oak_percent = emp_alloc_dict[pid]['OAK']
@@ -136,7 +140,7 @@ def main():
                 nyc_percent = emp_alloc_dict[pid]['NYC']
                 pdx_percent = emp_alloc_dict[pid]['PDX']
             else:
-                hq_percent = dept_alloc_dict[dept]['HQ']
+                hq_percent = dept_alloc_dict[dept]['SFM MSO']
                 nest_percent = dept_alloc_dict[dept]['Nest']
                 sf_percent = dept_alloc_dict[dept]['SF']
                 oak_percent = dept_alloc_dict[dept]['OAK']
@@ -146,7 +150,7 @@ def main():
         
         elif dept == 'Medical Records':
             if pid in emp_alloc_dict:
-                hq_percent = emp_alloc_dict[pid]['HQ']
+                hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
                 sf_percent = emp_alloc_dict[pid]['SF']
                 oak_percent = emp_alloc_dict[pid]['OAK']
@@ -154,7 +158,7 @@ def main():
                 nyc_percent = emp_alloc_dict[pid]['NYC']
                 pdx_percent = emp_alloc_dict[pid]['PDX']
             else:
-                hq_percent = dept_alloc_dict[dept]['HQ']
+                hq_percent = dept_alloc_dict[dept]['SFM MSO']
                 nest_percent = dept_alloc_dict[dept]['Nest']
                 sf_percent = dept_alloc_dict[dept]['SF']
                 oak_percent = dept_alloc_dict[dept]['OAK']
@@ -163,7 +167,7 @@ def main():
                 pdx_percent = dept_alloc_dict[dept]['PDX']
         elif dept == 'Call Center':
             if pid in emp_alloc_dict:
-                hq_percent = emp_alloc_dict[pid]['HQ']
+                hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
                 sf_percent = emp_alloc_dict[pid]['SF']
                 oak_percent = emp_alloc_dict[pid]['OAK']
@@ -171,7 +175,7 @@ def main():
                 nyc_percent = emp_alloc_dict[pid]['NYC']
                 pdx_percent = emp_alloc_dict[pid]['PDX']
             else:
-                hq_percent = dept_alloc_dict[dept]['HQ']
+                hq_percent = dept_alloc_dict[dept]['SFM MSO']
                 nest_percent = dept_alloc_dict[dept]['Nest']
                 sf_percent = dept_alloc_dict[dept]['SF']
                 oak_percent = dept_alloc_dict[dept]['OAK']
@@ -180,7 +184,7 @@ def main():
                 pdx_percent = dept_alloc_dict[dept]['PDX']
         elif dept == 'Financial Counselor':
             if pid in emp_alloc_dict:
-                hq_percent = emp_alloc_dict[pid]['HQ']
+                hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
                 sf_percent = emp_alloc_dict[pid]['SF']
                 oak_percent = emp_alloc_dict[pid]['OAK']
@@ -188,7 +192,7 @@ def main():
                 nyc_percent = emp_alloc_dict[pid]['NYC']
                 pdx_percent = emp_alloc_dict[pid]['PDX']
             else:
-                hq_percent = dept_alloc_dict[dept]['HQ']
+                hq_percent = dept_alloc_dict[dept]['SFM MSO']
                 nest_percent = dept_alloc_dict[dept]['Nest']
                 sf_percent = dept_alloc_dict[dept]['SF']
                 oak_percent = dept_alloc_dict[dept]['OAK']
@@ -197,7 +201,7 @@ def main():
                 pdx_percent = dept_alloc_dict[dept]['PDX']
         elif dept == 'Clinical Operations':
             if pid in emp_alloc_dict:
-                hq_percent = emp_alloc_dict[pid]['HQ']
+                hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
                 sf_percent = emp_alloc_dict[pid]['SF']
                 oak_percent = emp_alloc_dict[pid]['OAK']
@@ -205,7 +209,24 @@ def main():
                 nyc_percent = emp_alloc_dict[pid]['NYC']
                 pdx_percent = emp_alloc_dict[pid]['PDX']
             else:
-                hq_percent = dept_alloc_dict[dept]['HQ']
+                hq_percent = dept_alloc_dict[dept]['SFM MSO']
+                nest_percent = dept_alloc_dict[dept]['Nest']
+                sf_percent = dept_alloc_dict[dept]['SF']
+                oak_percent = dept_alloc_dict[dept]['OAK']
+                sv_percent = dept_alloc_dict[dept]['SV']
+                nyc_percent = dept_alloc_dict[dept]['NYC']
+                pdx_percent = dept_alloc_dict[dept]['PDX']
+        elif dept == 'Revenue Cycle':
+            if pid in emp_alloc_dict:
+                hq_percent = emp_alloc_dict[pid]['SFM MSO']
+                nest_percent = emp_alloc_dict[pid]['Nest']
+                sf_percent = emp_alloc_dict[pid]['SF']
+                oak_percent = emp_alloc_dict[pid]['OAK']
+                sv_percent = emp_alloc_dict[pid]['SV']
+                nyc_percent = emp_alloc_dict[pid]['NYC']
+                pdx_percent = emp_alloc_dict[pid]['PDX']
+            else:
+                hq_percent = dept_alloc_dict[dept]['SFM MSO']
                 nest_percent = dept_alloc_dict[dept]['Nest']
                 sf_percent = dept_alloc_dict[dept]['SF']
                 oak_percent = dept_alloc_dict[dept]['OAK']
@@ -213,7 +234,7 @@ def main():
                 nyc_percent = dept_alloc_dict[dept]['NYC']
                 pdx_percent = dept_alloc_dict[dept]['PDX']
         elif pid in emp_alloc_dict:
-            hq_percent = emp_alloc_dict[pid]['HQ']
+            hq_percent = emp_alloc_dict[pid]['SFM MSO']
             nest_percent = emp_alloc_dict[pid]['Nest']
             sf_percent = emp_alloc_dict[pid]['SF']
             oak_percent = emp_alloc_dict[pid]['OAK']
@@ -230,12 +251,12 @@ def main():
             
             if row[v] != 0.0:
                 if pid in emp_alloc_dict:  # if employee has allocation, use that allocation.  if not, use department allocatioin 
-                    df_emp_allocations.loc[len(df_emp_allocations.index)] = [hc, row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
-                                                                    str(coa_dict[row['Sub Department']][v]), ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + row['FILE NUMBER'], \
+                    df_emp_allocations.loc[len(df_emp_allocations.index)] = [ent_template, entitytagging_dict[hc][str(row['Office Reporting Location'])], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
+                                                                    str(coa_dict[row['Sub Department']][v]), ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
                                                                     ' ', row[v], row['Office Reporting Location'], '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                     'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
                     for l in all_locations:
-                        if l == 'HQ':
+                        if l == 'SFM MSO':
                             pct = hq_percent
                         elif l == 'Nest':
                             pct = nest_percent
@@ -252,18 +273,18 @@ def main():
                         
                         if pct != 0.0:
                             allocated_value = row[v]*pct
-                            df_emp_allocations.loc[len(df_emp_allocations.index)] = [entitytagging_dict[str(row['COMPANY CODE'])][l], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
-                                                                    coa_dict[row['Sub Department']][v], ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + row['FILE NUMBER'], \
+                            df_emp_allocations.loc[len(df_emp_allocations.index)] = [ent_template, entitytagging_dict[str(row['COMPANY CODE'])][l], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
+                                                                    coa_dict[row['Sub Department']][v], ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
                                                                     allocated_value , ' ', l, '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                     'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
-                elif dept in all_alloc_depts:
+                elif (dept in all_alloc_depts) and (cc == 'ML7'):
                     #print("Dept Hit")
-                    df_dept_allocations.loc[len(df_dept_allocations.index)] = [hc, row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
-                                                                    str(coa_dict[row['Sub Department']][v]), ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + row['FILE NUMBER'], \
+                    df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[hc][str(row['Office Reporting Location'])], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
+                                                                    str(coa_dict[row['Sub Department']][v]), ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
                                                                     ' ', row[v], row['Office Reporting Location'], '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                     'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
                     for l in all_locations:
-                        if l == 'HQ':
+                        if l == 'SFM MSO':
                             pct = hq_percent
                         elif l == 'Nest':
                             pct = nest_percent
@@ -280,8 +301,8 @@ def main():
                         
                         if pct != 0.0:
                             allocated_value = row[v]*pct
-                            df_dept_allocations.loc[len(df_dept_allocations.index)] = [entitytagging_dict[str(row['COMPANY CODE'])][l], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
-                                                                    coa_dict[row['Sub Department']][v], ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + row['FILE NUMBER'], \
+                            df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[str(row['COMPANY CODE'])][l], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
+                                                                    coa_dict[row['Sub Department']][v], ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
                                                                     allocated_value , ' ', l, '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                     'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
 
