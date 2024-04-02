@@ -14,7 +14,7 @@ from tkinter import TOP, ttk
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
 from tkinter.filedialog import asksaveasfile
-import PySimpleGUI as sg
+
 
 
 def main():
@@ -71,12 +71,18 @@ def main():
     df = df.reset_index()
 
     # Fill in blank cells with 0
-    df['GROSS PAY less PTO USED, Bonus, OT'] = df['GROSS PAY less PTO USED, Bonus, OT'].fillna(0)
-    df['OT'] = df['OT'].fillna(0)
-    df['VOLUNTARY DEDUCTION : ELC-ELECTRONICS RMB'] = df['VOLUNTARY DEDUCTION : ELC-ELECTRONICS RMB'].fillna(0)
-    df['TOTAL EMPLOYER TAX'] = df['TOTAL EMPLOYER TAX'].fillna(0)
-    df['MEMO : KM-401K SH MATCH'] = df['MEMO : KM-401K SH MATCH'].fillna(0)
-
+    df = df.fillna(0)
+    #df['GROSS PAY less PTO USED, Bonus, OT'] = df['GROSS PAY less PTO USED, Bonus, OT'].fillna(0)
+    #df['OT'] = df['OT'].fillna(0)
+    #df['VOLUNTARY DEDUCTION : ELC-ELECTRONICS RMB'] = df['VOLUNTARY DEDUCTION : ELC-ELECTRONICS RMB'].fillna(0)
+    #df['TOTAL EMPLOYER TAX'] = df['TOTAL EMPLOYER TAX'].fillna(0)
+    #df['MEMO : KM-401K SH MATCH'] = df['MEMO : KM-401K SH MATCH'].fillna(0)
+    #df['Medical Waiver'] = df['Medical Waiver'].fillna(0)
+    #df['MEDICAL'] = df['MEDICAL'].fillna(0)
+    #df['DENTAL'] = df['DENTAL'].fillna(0)
+    #df['VISION'] = df['VISION'].fillna(0)
+    #df['LIFE'] = df['LIFE'].fillna(0)
+    #df['MEDICAL'] = df['MEDICAL'].fillna(0)
 
     # Create new Dataframe for the Employee Allocations Output.
     df_emp_allocations = pd.DataFrame(columns=['Entity Template', 'Entity', 'PostDate', 'DocDate', 'AcctType', 'AcctNo', 'AcctName', 'Description', \
@@ -102,8 +108,17 @@ def main():
     # Create list for ALlocated depts
     all_alloc_depts = ['Receptionist HQ', 'Medical Records', 'Call Center', 'Financial Counselor', 'Clinical Operations', 'Revenue Cycle']
     # Create a list of all values to allocate
-    all_values = ['GROSS PAY less PTO USED, Bonus, OT', 'OT', 'VOLUNTARY DEDUCTION : ELC-ELECTRONICS RMB', 'TOTAL EMPLOYER TAX', \
-                     'MEMO : KM-401K SH MATCH']
+    coa_headers = coa_df.columns
+    all_values = coa_headers.tolist()
+
+    # Create a list of the allocations file headers.  
+    alloc_headers = df.columns
+    alloc_headers_values = alloc_headers.tolist()
+    
+    #all_values = ['GROSS PAY less PTO USED, Bonus, OT', 'OT', 'VOLUNTARY DEDUCTION : ELC-ELECTRONICS RMB', 'TOTAL EMPLOYER TAX', \
+    #                 'MEMO : KM-401K SH MATCH']
+    print(all_values)
+
 
     for index, row in df.iterrows():
         pid = str(row['POSITION ID'])
@@ -247,8 +262,9 @@ def main():
         #  df_allocations = pd.DataFrame(columns=['Entity', 'PostDate', 'DocDate', 'AcctType', 'AcctNo', 'AcctName', 'Description', \
         #                                        'DebitAmt', 'CreditAmt', 'Loc', 'Dept','Provider', 'Service Line', 'Comments'])
 
-        for v in all_values:
-            
+        for v in all_values[2:]:
+            # This commented out item bypassed checking for all the items in the COA file.
+            #if v in alloc_headers_values:
             if row[v] != 0.0:
                 if pid in emp_alloc_dict:  # if employee has allocation, use that allocation.  if not, use department allocatioin 
                     df_emp_allocations.loc[len(df_emp_allocations.index)] = [ent_template, entitytagging_dict[hc][str(row['Office Reporting Location'])], row['PERIOD ENDING DATE'], row['PAY DATE'], 'G/L Account', \
