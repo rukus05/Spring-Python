@@ -53,7 +53,7 @@ def main():
     entitytagging_df = entitytagging_df.reset_index()
     # Pass the entity tagging dataframe to the deptcode_to_subdept function to create the dept code
     entitytagging_dict = entity_tagging(entitytagging_df)
-    print(entitytagging_dict)
+    #print(entitytagging_dict)
 
     # Prompt user for Chart of Accounts File
     print("Select the Chart of Accounts File:")
@@ -120,7 +120,7 @@ def main():
 
     #all_values = ['GROSS PAY less PTO USED, Bonus, OT', 'OT', 'VOLUNTARY DEDUCTION : ELC-ELECTRONICS RMB', 'TOTAL EMPLOYER TAX', \
     #                 'MEMO : KM-401K SH MATCH']c
-    print(all_values)
+    #print(all_values)
 
 
     for index, row in df.iterrows():
@@ -187,7 +187,8 @@ def main():
                 pdx_percent = dept_alloc_dict[dept]['PDX']
         elif  re.search('Call Center*', str(dept), re.IGNORECASE):
         #if (row['Department Long Descr'] == 'Call Center '):
-        #dept == 'CALL CENTER':
+            # Accommodate Allocations file that has Call Center as lower case.
+            dept = 'Call Center'
             if pid in emp_alloc_dict:
                 hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
