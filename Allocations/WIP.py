@@ -105,9 +105,9 @@ def main():
     #print(hc)
     # Create a list of all Locations
     all_locations = ['SFM MSO', 'Nest', 'SF', 'OAK', 'SV', 'NYC', 'PDX']
-    # Create list for ALlocated depts
+    # Create list for ALlocated depts based on the Dept Allocation Dictionary, which was created from the allocations file.
     all_alloc_depts = list(dept_alloc_dict.keys())
-    print(all_alloc_depts)
+    #print(all_alloc_depts)
     #all_alloc_depts = ['Receptionist HQ', 'Medical Records', 'Call Center', 'Financial Counselor', 'Clinical Operations', 'Revenue Cycle']
     # Create a list of all values to allocate
     coa_headers = coa_df.columns
@@ -206,9 +206,8 @@ def main():
                 oak_percent = dept_alloc_dict[dept]['OAK']
                 sv_percent = dept_alloc_dict[dept]['SV']
                 nyc_percent = dept_alloc_dict[dept]['NYC']
-                pdx_percent = dept_alloc_dict[dept]['PDX']
-
-                print('Call Center Hit, ' + str(sf_percent))
+                pdx_percent = dept_alloc_dict[dept]['PDX']  
+                
         elif re.search('Financial Counselor*', str(dept), re.IGNORECASE):
             #dept == 'Financial Counselor':
             if pid in emp_alloc_dict:
