@@ -35,7 +35,7 @@ def main():
     #print(emp_alloc_dict)
     # Pass dataframe to create_deptalloc_dict function to create department allocations dictionary
     dept_alloc_dict = create_deptalloc_dict(df_ea)
-    print(dept_alloc_dict)
+    #print(dept_alloc_dict)
     
     # Prompt user for file containg Dept Code to Sub Dept mappings
     print("Select the current Dept Code to Sub Dept Mappings File:")
@@ -53,7 +53,7 @@ def main():
     entitytagging_df = entitytagging_df.reset_index()
     # Pass the entity tagging dataframe to the deptcode_to_subdept function to create the dept code
     entitytagging_dict = entity_tagging(entitytagging_df)
-    #print(entitytagging_dict)
+    print(entitytagging_dict)
 
     # Prompt user for Chart of Accounts File
     print("Select the Chart of Accounts File:")
@@ -281,7 +281,13 @@ def main():
             if v in alloc_headers_values:
                 if row[v] != 0.0:
                     if pid in emp_alloc_dict:  # if employee has allocation, use that allocation.  if not, use department allocatioin 
-                        df_emp_allocations.loc[len(df_emp_allocations.index)] = [ent_template, entitytagging_dict[hc][str(row['Office Reporting Location'])], row['PERIOD ENDING DATE'], row['PAY DATE'], ' ', 'G/L Account', \
+                        s = str(row['Office Reporting Location'])
+                        if s == 'NEST':
+                            lower_est = s[-3:]
+                            corrected_s = 'N' + lower_est.lower()
+                        else:
+                            corrected_s = s
+                        df_emp_allocations.loc[len(df_emp_allocations.index)] = [ent_template, entitytagging_dict[hc][corrected_s], row['PERIOD ENDING DATE'], row['PAY DATE'], ' ', 'G/L Account', \
                                                                         str(coa_dict[row['Sub Department']][v]), ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
                                                                         ' ', row[v], row['Office Reporting Location'], '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                         'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
