@@ -32,7 +32,7 @@ def main():
 
     # Pass dataframe to create_empalloc_dict function to create employee allocations dictionary
     emp_alloc_dict = create_empalloc_dict(df_ea)
-    #print(emp_alloc_dict)
+    print(emp_alloc_dict)
     # Pass dataframe to create_deptalloc_dict function to create department allocations dictionary
     dept_alloc_dict = create_deptalloc_dict(df_ea)
     #print(dept_alloc_dict)
@@ -53,7 +53,7 @@ def main():
     entitytagging_df = entitytagging_df.reset_index()
     # Pass the entity tagging dataframe to the deptcode_to_subdept function to create the dept code
     entitytagging_dict = entity_tagging(entitytagging_df)
-    print(entitytagging_dict)
+    #print(entitytagging_dict)
 
     # Prompt user for Chart of Accounts File
     print("Select the Chart of Accounts File:")
@@ -127,7 +127,9 @@ def main():
 
     for index, row in df.iterrows():
         pid = str(row['POSITION ID'])
-        #print(pid)
+        pid = pid.rstrip('.0')
+        print(pid)
+        print(type(pid))
         dept = row['Department']
         cc = row['COMPANY CODE']
         # Intialize employee percentages variables
@@ -270,6 +272,7 @@ def main():
             sv_percent = emp_alloc_dict[pid]['SV']
             nyc_percent = emp_alloc_dict[pid]['NYC']
             pdx_percent = emp_alloc_dict[pid]['PDX']
+            print(hq_percent, nest_percent, sf_percent,nyc_percent)
 
         # Iterate through all locations.  This calculates the allocations, and creates a line in the dataframe for each location.
         # 
@@ -281,6 +284,7 @@ def main():
             if v in alloc_headers_values:
                 if row[v] != 0.0:
                     if pid in emp_alloc_dict:  # if employee has allocation, use that allocation.  if not, use department allocatioin 
+                        # If 'NEST' is an office reporting location, change to 'Nest'
                         s = str(row['Office Reporting Location'])
                         if s == 'NEST':
                             lower_est = s[-3:]
