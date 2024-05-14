@@ -127,11 +127,18 @@ def main():
 
     for index, row in df.iterrows():
         pid = str(row['POSITION ID'])
-        pid = pid.rstrip('.0')
+        #pid = pid.rstrip('.0')
+        
+        dept = row['Department']
+        print(dept)
+        cc = row['COMPANY CODE']
+
+        # For some reason, the 362 files add a ".0" at the end.  Hence, we're stripping it away for 362 files.
+        if cc == '362':
+            pid = pid.rstrip('.0')
+        
         print(pid)
         print(type(pid))
-        dept = row['Department']
-        cc = row['COMPANY CODE']
         # Intialize employee percentages variables
         emp_hq_percent = 0
         emp_nest_percent = 0
@@ -193,6 +200,7 @@ def main():
         #if (row['Department Long Descr'] == 'Call Center '):
             # Accommodate Allocations file that has Call Center as lower case.
             dept = 'Call Center'
+            #print(dept)
             if pid in emp_alloc_dict:
                 hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
@@ -208,7 +216,8 @@ def main():
                 oak_percent = dept_alloc_dict[dept]['OAK']
                 sv_percent = dept_alloc_dict[dept]['SV']
                 nyc_percent = dept_alloc_dict[dept]['NYC']
-                pdx_percent = dept_alloc_dict[dept]['PDX']  
+                pdx_percent = dept_alloc_dict[dept]['PDX']
+
                 
         elif re.search('Financial Counselor*', str(dept), re.IGNORECASE):
             #dept == 'Financial Counselor':
