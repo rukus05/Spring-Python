@@ -35,7 +35,7 @@ def main():
     #print(emp_alloc_dict)
     # Pass dataframe to create_deptalloc_dict function to create department allocations dictionary
     dept_alloc_dict = create_deptalloc_dict(df_ea)
-    #print(dept_alloc_dict)
+    print(dept_alloc_dict)
     
     # Prompt user for file containg Dept Code to Sub Dept mappings
     print("Select the current Dept Code to Sub Dept Mappings File:")
@@ -53,7 +53,7 @@ def main():
     entitytagging_df = entitytagging_df.reset_index()
     # Pass the entity tagging dataframe to the deptcode_to_subdept function to create the dept code
     entitytagging_dict = entity_tagging(entitytagging_df)
-    print(entitytagging_dict)
+    #print(entitytagging_dict)
 
     # Prompt user for Chart of Accounts File
     print("Select the Chart of Accounts File:")
@@ -70,6 +70,15 @@ def main():
     df = pd.read_excel(inputf,dtype={'FILE NUMBER': str})
     df = df.reset_index()
 
+    correct_company_codes = ["362", "22J", "ML7"]
+    while True:
+        company_code = input("What Company Code is this Input File for? ").strip().upper()
+        if company_code in correct_company_codes:
+            print(f'You have set the Company Code to {company_code}')
+            break
+        else:
+            print("Invalid Company Code.  Please try again:")
+        
     # Fill in blank cells with 0
     df = df.fillna(0)
     #df['GROSS PAY less PTO USED, Bonus, OT'] = df['GROSS PAY less PTO USED, Bonus, OT'].fillna(0)
@@ -84,6 +93,8 @@ def main():
     #df['LIFE'] = df['LIFE'].fillna(0)
     #df['MEDICAL'] = df['MEDICAL'].fillna(0)
 
+
+
     # Create new Dataframe for the Employee Allocations Output.
     df_emp_allocations = pd.DataFrame(columns=['Entity Template', 'Entity', 'PostDate', 'DocDate', 'DocNo','AcctType', 'AcctNo', 'AcctName', 'Description', \
                                            'DebitAmt', 'CreditAmt', 'Loc', 'Dept','Provider', 'Service Line', 'Comments'])
@@ -92,6 +103,7 @@ def main():
                                            'DebitAmt', 'CreditAmt', 'Loc', 'Dept','Provider', 'Service Line', 'Comments'])
     
     # Capture home payroll company of the file.
+    '''
     if str(df.loc[1, 'COMPANY CODE'])  == '362':
         hc = '362'
         ent_template = '008'
@@ -101,20 +113,67 @@ def main():
     elif str(df.loc[1, 'COMPANY CODE']) == 'ML7':
         hc = 'ML7'
         ent_template = '002'
+    '''
+    # The above is used to capture company code in the Allocations WIP.  However, with PTO, you must assign the Company Code.
     
-    #print(hc)
+    
+    if company_code == '362':
+        hc = '362'
+        ent_template = '008'
+    elif company_code  == '22J':
+        hc = '22J'
+        ent_template = '007'
+    elif company_code == 'ML7':
+        hc = 'ML7'
+        ent_template = '002'
+    
     # Create a list of all Locations
     all_locations = ['SFM MSO', 'Nest', 'SF', 'OAK', 'SV', 'NYC', 'PDX']
-    # Create list for ALlocated depts based on the Dept Allocation Dictionary, which was created from the allocations file.
+    # Create list for Allocated depts based on the Dept Allocation Dictionary, which was created from the allocations file.
+    # define all_alloc_depts as ['Receptionist HQ', 'Medical Records', 'Call Center', 'Financial Counselor', 'Clinical Operations', 'Revenue Cycle']
     all_alloc_depts = list(dept_alloc_dict.keys())
-    #print(all_alloc_depts)
+    
+    # Create a dictionary to hold allocation values by Dept
+    #dept_dict = {'Receptionist HQ' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
+    #             'Medical Records' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}, 
+    #             'Call Center' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}, 
+    #             'Financial Counselor' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
+    #             'Cinical Operations' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
+    #             'Revenue Cycle' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}
+    #             }
+    
+    # Instead of above, use list comprehension to create dept_dict
+    l_dict = {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}
+    dept_dict = {key : l_dict for key in all_alloc_depts}
+    
+    print(dept_dict)
+
+    
+    
+
+    ##print(all_alloc_depts)
     #all_alloc_depts = ['Receptionist HQ', 'Medical Records', 'Call Center', 'Financial Counselor', 'Clinical Operations', 'Revenue Cycle']
     # Create a list of all values to allocate
     coa_headers = coa_df.columns
     all_values = coa_headers.tolist()
-
-    # Create a list of the allocations file headers.  
+    
+    # Remove any leading and trailing blank spaces.
+    df.columns = df.columns.str.strip()
+    # Create a list of the allocations file headers.    
     alloc_headers = df.columns
+ 
+    # Checks if the column header 'Postion ID' is present.  If so, replace it with 'POSITION ID'.
+    pos_id = 'Position ID'
+    if pos_id in alloc_headers:
+        df = df.rename(columns={pos_id: pos_id.upper()})
+    
+    #df['Department Code'] = df['Department Code'].apply(lambda x: f"{int(x):04d}" if isinstance(x,int) else x)
+    df['Department Code'] = df['Department Code'].astype(int)
+    
+    # Ensure Period Ending Date column is a DateTime Type.
+    df['PERIOD ENDING DATE'] = pd.to_datetime(df['PERIOD ENDING DATE'])
+    # Remove the hours, minutes, and seconds
+    df['PERIOD ENDING DATE'] = df['PERIOD ENDING DATE'].dt.strftime('%m/%d/%Y')
     alloc_headers_values = alloc_headers.tolist()
 
     # Create a set to capture Allocation headers that are not in the input file
@@ -124,12 +183,21 @@ def main():
     #                 'MEMO : KM-401K SH MATCH']c
     #print(all_values)
 
-
+    
     for index, row in df.iterrows():
         pid = str(row['POSITION ID'])
-        #print(pid)
+        #pid = pid.rstrip('.0')
+        
         dept = row['Department']
-        cc = row['COMPANY CODE']
+        #print(type(row['Department Code']))
+        cc = company_code
+
+        # For some reason, the 362 files add a ".0" at the end.  Hence, we're stripping it away for 362 files.
+        if cc == '362':
+            pid = pid.rstrip('.0')
+        
+        #print(pid)
+        #print(type(pid))
         # Intialize employee percentages variables
         emp_hq_percent = 0
         emp_nest_percent = 0
@@ -191,6 +259,7 @@ def main():
         #if (row['Department Long Descr'] == 'Call Center '):
             # Accommodate Allocations file that has Call Center as lower case.
             dept = 'Call Center'
+            #print(dept)
             if pid in emp_alloc_dict:
                 hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
@@ -206,7 +275,8 @@ def main():
                 oak_percent = dept_alloc_dict[dept]['OAK']
                 sv_percent = dept_alloc_dict[dept]['SV']
                 nyc_percent = dept_alloc_dict[dept]['NYC']
-                pdx_percent = dept_alloc_dict[dept]['PDX']  
+                pdx_percent = dept_alloc_dict[dept]['PDX']
+
                 
         elif re.search('Financial Counselor*', str(dept), re.IGNORECASE):
             #dept == 'Financial Counselor':
@@ -270,6 +340,7 @@ def main():
             sv_percent = emp_alloc_dict[pid]['SV']
             nyc_percent = emp_alloc_dict[pid]['NYC']
             pdx_percent = emp_alloc_dict[pid]['PDX']
+            print(hq_percent, nest_percent, sf_percent,nyc_percent)
 
         # Iterate through all locations.  This calculates the allocations, and creates a line in the dataframe for each location.
         # 
@@ -281,16 +352,17 @@ def main():
             if v in alloc_headers_values:
                 if row[v] != 0.0:
                     if pid in emp_alloc_dict:  # if employee has allocation, use that allocation.  if not, use department allocatioin 
+                        # If 'NEST' is an office reporting location, change to 'Nest'
                         s = str(row['Office Reporting Location'])
                         if s == 'NEST':
                             lower_est = s[-3:]
                             corrected_s = 'N' + lower_est.lower()
                         else:
                             corrected_s = s
-                        df_emp_allocations.loc[len(df_emp_allocations.index)] = [ent_template, entitytagging_dict[hc][corrected_s], row['PERIOD ENDING DATE'], row['PAY DATE'], ' ', 'G/L Account', \
-                                                                        str(coa_dict[row['Sub Department']][v]), ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
-                                                                        ' ', row[v], row['Office Reporting Location'], '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
-                                                                        'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
+                        df_emp_allocations.loc[len(df_emp_allocations.index)] = [ent_template, entitytagging_dict[hc][corrected_s], row['PERIOD ENDING DATE'], row['PERIOD ENDING DATE'], ' ', 'G/L Account', \
+                                                                        str(coa_dict[row['Sub Department']][v]), ' ', company_code + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
+                                                                        ' ', row[v], row['Office Reporting Location'], str(row['Department Code']).zfill(4), \
+                                                                        'NULL', 'NULL', company_code + '- Allocations - PPE ' + str(row['PERIOD ENDING DATE'])]
                         for l in all_locations:
                             if l == 'SFM MSO':
                                 pct = hq_percent
@@ -309,16 +381,16 @@ def main():
                             
                             if pct != 0.0:
                                 allocated_value = row[v]*pct
-                                df_emp_allocations.loc[len(df_emp_allocations.index)] = [ent_template, entitytagging_dict[str(row['COMPANY CODE'])][l], row['PERIOD ENDING DATE'], row['PAY DATE'], ' ', 'G/L Account', \
-                                                                        coa_dict[row['Sub Department']][v], ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
-                                                                        allocated_value , ' ', l, '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
-                                                                        'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
+                                df_emp_allocations.loc[len(df_emp_allocations.index)] = [ent_template, entitytagging_dict[company_code][l], row['PERIOD ENDING DATE'], row['PERIOD ENDING DATE'], ' ', 'G/L Account', \
+                                                                        coa_dict[row['Sub Department']][v], ' ', company_code + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
+                                                                        allocated_value , ' ', l, str(row['Department Code']).zfill(4), \
+                                                                        'NULL', 'NULL', company_code + '- Allocations - PPE ' + str(row['PERIOD ENDING DATE'])]
                     elif (dept in all_alloc_depts) and (cc == 'ML7'):
                         #print("Dept Hit")
-                        df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[hc][str(row['Office Reporting Location'])], row['PERIOD ENDING DATE'], row['PAY DATE'], ' ', 'G/L Account', \
-                                                                        str(coa_dict[row['Sub Department']][v]), ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
-                                                                        ' ', row[v], row['Office Reporting Location'], '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
-                                                                        'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
+                        df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[hc][str(row['Office Reporting Location'])], row['PERIOD ENDING DATE'], row['PERIOD ENDING DATE'], ' ', 'G/L Account', \
+                                                                        str(coa_dict[row['Sub Department']][v]), ' ', company_code + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
+                                                                        ' ', row[v], row['Office Reporting Location'], str(row['Department Code']).zfill(4), \
+                                                                        'NULL', 'NULL', company_code + '- Allocations - PPE ' + str(row['PERIOD ENDING DATE'])]
                         for l in all_locations:
                             if l == 'SFM MSO':
                                 pct = hq_percent
@@ -337,10 +409,10 @@ def main():
                             
                             if pct != 0.0:
                                 allocated_value = row[v]*pct
-                                df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[str(row['COMPANY CODE'])][l], row['PERIOD ENDING DATE'], row['PAY DATE'], ' ', 'G/L Account', \
-                                                                        coa_dict[row['Sub Department']][v], ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
-                                                                        allocated_value , ' ', l, '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
-                                                                        'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
+                                df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code][l], row['PERIOD ENDING DATE'], row['PERIOD ENDING DATE'], ' ', 'G/L Account', \
+                                                                        coa_dict[row['Sub Department']][v], ' ', company_code + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
+                                                                        allocated_value , ' ', l, str(row['Department Code']).zfill(4), \
+                                                                        'NULL', 'NULL', company_code + '- Allocations - PPE ' + str(row['PERIOD ENDING DATE'])]
             else:
                 missing_headers.append(v)
     mh = set(missing_headers)
@@ -349,7 +421,7 @@ def main():
 
     #print(df_dept_allocations)
     # Start the "Save As" dialog box for the Employee Allocations.
-    print("Save the Employee Allocations Output.")                            
+    print("Save the Employee PTO Allocations Output.")                            
     app = tk.Tk()
     app.title("Save File As")
     status_label = tk.Label(app, text="", fg="green")
@@ -361,7 +433,7 @@ def main():
     # Check if the dept allocations file is empty.
     if len(df_dept_allocations) > 0:
         # Start the "Save As" dialog box for the Employee Allocations
-        print("Save the Dept Allocations Output.")                            
+        print("Save the Dept PTO Allocations Output.")                            
         app = tk.Tk()
         app.title("Save File As")
         status_label = tk.Label(app, text="", fg="green")
