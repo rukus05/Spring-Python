@@ -395,7 +395,9 @@ def main():
                         #             'Revenue Cycle' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}
                         #             }
                         # Set dept_dict_aggregate_value = {'Receptionist HQ': 0, 'Medical Records': 0, 'Call Center': 0, 'Financial Counselor': 0, 'Clinical Operations': 0, 'Revenue Cycle': 0}
-                        dept_dict_aggregate_value[dept] = dept_dict_aggregate_value[dept] + row[v]
+                        # Assign this row's value to agg_v
+                        agg_v = row[v]
+                        print(agg_v)
                         #print(dept_dict_aggregate_value[dept])
                         '''
                         df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[hc][str(row['Office Reporting Location'])], row['PERIOD ENDING DATE'], row['PERIOD ENDING DATE'], ' ', 'G/L Account', \
@@ -419,16 +421,20 @@ def main():
                             elif l == 'PDX':
                                 pct = pdx_percent
                             
-
-                            dept_dict_alloc_values[dept][l] = dept_dict_alloc_values[dept][l] + row[v]*pct
+                            #if pct != 0.0:
+                            #    this_alloc_value = agg_v * pct
+                            #    print(this_alloc_value)
+                            #    dept_dict_alloc_values[dept][l] = dept_dict_alloc_values[dept][l] + this_alloc_value
                          
+                        # Increment the aggregate value by this row's value
+                        dept_dict_aggregate_value[dept] = dept_dict_aggregate_value[dept] + agg_v
                         '''  
                             if pct != 0.0:
                                 allocated_value = row[v]*pct
                                 df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code][l], row['PERIOD ENDING DATE'], row['PERIOD ENDING DATE'], ' ', 'G/L Account', \
                                                                         coa_dict[row['Sub Department']][v], ' ', company_code + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
                                                                         allocated_value , ' ', l, str(row['Department Code']).zfill(4), \
-                                                                        'NULL', 'NULL', company_code + '- Allocations - PPE ' + str(row['PERIOD ENDING DATE'])]
+                                                                        'NULL', 'NULL', company_code + '- Allocations - PPE ' + str(row['PERIOD ENDING DATE'])]T
                         '''
             else:
                 missing_headers.append(v)
@@ -437,10 +443,27 @@ def main():
     print(mh)
 
     # Create the DF for the Dept Allocations
+    '''
     for outer_key, inner_dict in dept_dict_alloc_values.items():
+        df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, 'NULL ', 'NULL', 'NULL', ' ', 'G/L Account', \
+                                                                        'NULL', ' ', company_code + '-' + outer_key + '-' + 'v', \
+                                                                        ' ', dept_dict_aggregate_value[outer_key], 'NULL', 'NULL', \
+                                                                        'NULL', 'NULL', 'NULL']
+
+
         print(f" {outer_key} aggregate sum is {dept_dict_aggregate_value[outer_key]}")
+
+
         for inner_key, inner_value in inner_dict.items():
+            
+            df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, 'NULL ', 'NULL', 'NULL', ' ', 'G/L Account', \
+                                                                        'NULL', ' ', company_code + '-' + outer_key + '-' + 'v', \
+                                                                        inner_value, ' ', 'NULL', 'NULL', \
+                                                                        'NULL', 'NULL', 'NULL']
             print(f"{outer_key} sum for {inner_key} is {inner_value}")
+    '''
+    print(dept_dict_aggregate_value)
+    print(dept_dict_alloc_values)
 
 
 
