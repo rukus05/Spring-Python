@@ -14,6 +14,7 @@ from tkinter import TOP, ttk
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
 from tkinter.filedialog import asksaveasfile
+from copy import deepcopy
 
 
 
@@ -32,7 +33,7 @@ def main():
 
     # Pass dataframe to create_empalloc_dict function to create employee allocations dictionary
     emp_alloc_dict = create_empalloc_dict(df_ea)
-    print(emp_alloc_dict)
+    #print(emp_alloc_dict)
     # Pass dataframe to create_deptalloc_dict function to create department allocations dictionary
     dept_alloc_dict = create_deptalloc_dict(df_ea)
     #print(dept_alloc_dict)
@@ -53,7 +54,12 @@ def main():
     entitytagging_df = entitytagging_df.reset_index()
     # Pass the entity tagging dataframe to the deptcode_to_subdept function to create the dept code
     entitytagging_dict = entity_tagging(entitytagging_df)
-    #print(entitytagging_dict)
+    # Entity dict has the following format:
+    # {'ML7': {'SFM MSO': '002', 'Nest': '002', 'SF': '010', 'OAK': '011', 'SV': '012', 'NYC': '013', 'PDX': '014'}, 
+    # '22J': {'SFM MSO': '002', 'Nest': '002', 'SF': '007', 'OAK': '007', 'SV': '007', 'NYC': '013', 'PDX': '014'}, 
+    # '362': {'SFM MSO': '002', 'Nest': '002', 'SF': '010', 'OAK': '011', 'SV': '012', 'NYC': '008', 'PDX': '014'}, 
+    # '633': {'SFM MSO': '002', 'Nest': '002', 'SF': '010', 'OAK': '011', 'SV': '012', 'NYC': '013', 'PDX': '009'}}
+    
 
     # Prompt user for Chart of Accounts File
     print("Select the Chart of Accounts File:")
@@ -83,6 +89,12 @@ def main():
     #df['VISION'] = df['VISION'].fillna(0)
     #df['LIFE'] = df['LIFE'].fillna(0)
     #df['MEDICAL'] = df['MEDICAL'].fillna(0)
+    company_code = str(df.at[0,'COMPANY CODE'])
+    #print(f"The company code is {company_code}")
+    ped = df.at[0, 'PERIOD ENDING DATE']
+    payd = df.at[0, 'PAY DATE']
+    
+    
 
     # Create new Dataframe for the Employee Allocations Output.
     df_emp_allocations = pd.DataFrame(columns=['Entity Template', 'Entity', 'PostDate', 'DocDate', 'DocNo','AcctType', 'AcctNo', 'AcctName', 'Description', \
@@ -107,12 +119,56 @@ def main():
     all_locations = ['SFM MSO', 'Nest', 'SF', 'OAK', 'SV', 'NYC', 'PDX']
     # Create list for ALlocated depts based on the Dept Allocation Dictionary, which was created from the allocations file.
     all_alloc_depts = list(dept_alloc_dict.keys())
-    #print(all_alloc_depts)
+    
     #all_alloc_depts = ['Receptionist HQ', 'Medical Records', 'Call Center', 'Financial Counselor', 'Clinical Operations', 'Revenue Cycle']
+    
+    l_dict = {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}
+    
+    dept_dict_alloc_values = {dept : deepcopy(l_dict) for dept in all_alloc_depts}
+    
+    
     # Create a list of all values to allocate
     coa_headers = coa_df.columns
     all_values = coa_headers.tolist()
+    
+    # Initialize the 'All Value' items to 0.
+    dict_allValues_sum = {key : 0 for key in all_values[2:]}
+    #print(dict_allValues_sum)
+    # Here's what the dict looks like:
+    # {'SUB_DEPARTMENT': 0, 'Salaries and Wages': 0, 'OT': 0, 'ELC': 0, 'ER Taxes': 0, '401K-ER Match': 0, 
+    # 'Medical Waiver': 0, 'MEDICAL': 0, 'DENTAL': 0, 'VISION': 0, 'LIFE': 0, 'Other Benefits': 0}
+    
+    # Create a dict to assign the initialized 'All Values' aggregate sums to a dept
+    dict_usefor_sumV = {dept : deepcopy(dict_allValues_sum) for dept in all_alloc_depts}
+    # {'Receptionist HQ': {'Salaries and Wages': 0, 'OT': 0, 'ELC': 0, 'ER Taxes': 0, '401K-ER Match': 0, 'Medical Waiver': 0, 'MEDICAL': 0, 'DENTAL': 0, 'VISION': 0, 'LIFE': 0, 'Other Benefits': 0}, 
+    # {'Medical Records': {'Salaries and Wages': 0, 'OT': 0, 'ELC': 0, 'ER Taxes': 0, '401K-ER Match': 0, 'Medical Waiver': 0, 'MEDICAL': 0, 'DENTAL': 0, 'VISION': 0, 'LIFE': 0, 'Other Benefits': 0}, 
+    # etc, etc
 
+    # Create a dict that has something like:  {'Nest' : 0, 'OAK' : 0, 'NYC' : 0, etc}
+    # Where the values are the percentage allocations
+    dict_loc_to_pctv = {loc : 0 for loc in all_locations}
+
+    # Create the following dictionary:
+    # {'Salaries and Wages': {'Nest' : 0, 'OAK' : 0, 'NYC' : 0, etc}, 'OT': {'Nest' : 0, 'OAK' : 0, 'NYC' : 0, etc}, etc, etc}
+    # The 2: skips 'Index' and 'SUB_DEPARTMENT'; start at element #2
+    dict_allValues_to_locpctv = {allv : deepcopy(dict_loc_to_pctv) for allv in all_values[2:]}
+    
+    # Create the following dictionary framework:
+    # {'Call Center' : {'Salaries and Wages': {'Nest' : 0, 'OAK' : 0, 'NYC' : 0, etc}, 'OT': {'Nest' : 0, 'OAK' : 0, 'NYC' : 0, etc}, etc, etc},
+    # {'Medical Records' : {'Salaries and Wages': {'Nest' : 0, 'OAK' : 0, 'NYC' : 0, etc}, 'OT': {'Nest' : 0, 'OAK' : 0, 'NYC' : 0, etc}, etc, etc},
+    dict_usefor_pctV = {dept : deepcopy(dict_allValues_to_locpctv) for dept in all_alloc_depts }
+
+    #print(dict_usefor_pctV)
+    # Dict looks like this:
+    # {'Receptionist HQ': {'Salaries and Wages': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'OT': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ELC': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ER Taxes': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, '401K-ER Match': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Medical Waiver': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'MEDICAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'DENTAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'VISION': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'LIFE': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Other Benefits': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}}, 
+    # 'Medical Records': {'Salaries and Wages': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'OT': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ELC': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ER Taxes': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, '401K-ER Match': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Medical Waiver': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'MEDICAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'DENTAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'VISION': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'LIFE': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Other Benefits': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}}, 
+    # 'Call Center': {'Salaries and Wages': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'OT': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ELC': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ER Taxes': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, '401K-ER Match': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Medical Waiver': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'MEDICAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'DENTAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'VISION': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'LIFE': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Other Benefits': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}}, 
+    # 'Financial Counselor': {'Salaries and Wages': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'OT': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ELC': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ER Taxes': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, '401K-ER Match': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Medical Waiver': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'MEDICAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'DENTAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'VISION': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'LIFE': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Other Benefits': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}}, 
+    # 'Clinical Operations': {'Salaries and Wages': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'OT': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ELC': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ER Taxes': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, '401K-ER Match': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Medical Waiver': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'MEDICAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'DENTAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'VISION': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'LIFE': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Other Benefits': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}}, 
+    # 'Revenue Cycle': {'Salaries and Wages': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'OT': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ELC': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'ER Taxes': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, '401K-ER Match': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Medical Waiver': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'MEDICAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'DENTAL': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'VISION': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'LIFE': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}, 'Other Benefits': {'SFM MSO': 0, 'Nest': 0, 'SF': 0, 'OAK': 0, 'SV': 0, 'NYC': 0, 'PDX': 0}}}
+
+    # Create a dict to associate Depts with Sub Depts
+    dict_dept_to_subdept = {dept : '' for dept in all_alloc_depts}
     # Create a list of the allocations file headers.  
     alloc_headers = df.columns
     alloc_headers_values = alloc_headers.tolist()
@@ -130,15 +186,12 @@ def main():
         #pid = pid.rstrip('.0')
         
         dept = row['Department']
-        print(dept)
         cc = row['COMPANY CODE']
 
         # For some reason, the 362 files add a ".0" at the end.  Hence, we're stripping it away for 362 files.
         if cc == '362':
             pid = pid.rstrip('.0')
         
-        print(pid)
-        print(type(pid))
         # Intialize employee percentages variables
         emp_hq_percent = 0
         emp_nest_percent = 0
@@ -281,7 +334,7 @@ def main():
             sv_percent = emp_alloc_dict[pid]['SV']
             nyc_percent = emp_alloc_dict[pid]['NYC']
             pdx_percent = emp_alloc_dict[pid]['PDX']
-            print(hq_percent, nest_percent, sf_percent,nyc_percent)
+            #print(hq_percent, nest_percent, sf_percent,nyc_percent)
 
         # Iterate through all locations.  This calculates the allocations, and creates a line in the dataframe for each location.
         # 
@@ -327,7 +380,7 @@ def main():
                                                                         allocated_value , ' ', l, '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                         'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
                     elif (dept in all_alloc_depts) and (cc == 'ML7'):
-                        #print("Dept Hit")
+                        '''
                         df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[hc][str(row['Office Reporting Location'])], row['PERIOD ENDING DATE'], row['PAY DATE'], ' ', 'G/L Account', \
                                                                         str(coa_dict[row['Sub Department']][v]), ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
                                                                         ' ', row[v], row['Office Reporting Location'], '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
@@ -354,11 +407,62 @@ def main():
                                                                         coa_dict[row['Sub Department']][v], ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
                                                                         allocated_value , ' ', l, '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                         'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
+                        '''
+                        agg_v = row[v]
+                        dict_usefor_sumV[dept][v] = dict_usefor_sumV[dept][v] + agg_v
+                        dict_dept_to_subdept[dept] = row['Sub Department']
+
             else:
                 missing_headers.append(v)
     mh = set(missing_headers)
     print (" The following headers were missing from the Input file")
     print(mh)
+    #print(dict_usefor_sumV)
+
+    for d, v in dict_usefor_sumV.items():
+        hq_percent = dept_alloc_dict[d]['SFM MSO']
+        nest_percent = dept_alloc_dict[d]['Nest']
+        sf_percent = dept_alloc_dict[d]['SF']
+        oak_percent = dept_alloc_dict[d]['OAK']
+        sv_percent = dept_alloc_dict[d]['SV']
+        nyc_percent = dept_alloc_dict[d]['NYC']
+        pdx_percent = dept_alloc_dict[d]['PDX']
+
+        for vals in all_values[2:]:
+            for l in all_locations:
+                if l == 'SFM MSO':
+                    pct = hq_percent
+                elif l == 'Nest':
+                    pct = nest_percent
+                elif l == 'SF':
+                    pct = sf_percent
+                elif l == 'OAK':
+                    pct = oak_percent
+                elif l == 'SV':
+                    pct = sv_percent
+                elif l == 'NYC':
+                    pct = nyc_percent
+                elif l == 'PDX':
+                    pct = pdx_percent
+                
+                dict_usefor_pctV[d][vals][l] = dict_usefor_sumV[d][vals]*pct
+
+    #print(dict_usefor_pctV)
+
+    for outer_key, d_a_lpct in dict_usefor_pctV.items():
+        for vs, locpcts in d_a_lpct.items():
+            
+            df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, 'NULL' , ped, payd, ' ', 'G/L Account', 'NULL', ' ', company_code + '-' + outer_key + '-' + vs, ' ', \
+                                                                       dict_usefor_sumV[outer_key][vs], 'NULL', 'NULL', 'NULL', 'NULL', 'NULL']
+            
+            for locs, pctvs in locpcts.items():
+                     df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code][locs], ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs, \
+                                                                        dict_usefor_pctV[outer_key][vs][locs], ' ', locs, 'NULL', 'NULL', 'NULL', 'NULL']
+
+
+
+
+
 
     #print(df_dept_allocations)
     # Start the "Save As" dialog box for the Employee Allocations.
