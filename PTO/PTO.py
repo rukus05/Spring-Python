@@ -14,6 +14,7 @@ from tkinter import TOP, ttk
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
 from tkinter.filedialog import asksaveasfile
+from copy import deepcopy
 
 
 
@@ -134,29 +135,38 @@ def main():
     all_alloc_depts = list(dept_alloc_dict.keys())
     
     # Create a dictionary to hold allocation values by Dept
-    #dept_dict = {'Receptionist HQ' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
+    #dept_dict_alloc_values = {'Receptionist HQ' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
     #             'Medical Records' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}, 
     #             'Call Center' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}, 
     #             'Financial Counselor' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
-    #             'Cinical Operations' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
+    #             'Clinical Operations' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
     #             'Revenue Cycle' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}
     #             }
     
     # Instead of above, use list comprehension to create dept_dict
     l_dict = {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}
-    dept_dict = {key : l_dict for key in all_alloc_depts}
     
-    print(dept_dict)
+    dept_dict_alloc_values = {dept : deepcopy(l_dict) for dept in all_alloc_depts}
+    # The above code creates this nested dictionary
+    '''
+    dept_dict_alloc_values = {'Receptionist HQ' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
+                                     'Medical Records' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}, 
+                                     'Call Center' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}, 
+                                     'Financial Counselor' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
+                                     'Clinical Operations' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
+                                     'Revenue Cycle' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}
+                                     }
+    '''
+    # create dictionary to hold the aggregate values, and initialize to 0.
+    # Set dept_dict_aggregate_value = {'Receptionist HQ': 0, 'Medical Records': 0, 'Call Center': 0, 'Financial Counselor': 0, 'Clinical Operations': 0, 'Revenue Cycle': 0}
+    dept_dict_aggregate_value = {key : 0 for key in all_alloc_depts}
+    
+    #print(dept_dict_aggregate_value)
 
-    
-    
-
-    ##print(all_alloc_depts)
-    #all_alloc_depts = ['Receptionist HQ', 'Medical Records', 'Call Center', 'Financial Counselor', 'Clinical Operations', 'Revenue Cycle']
     # Create a list of all values to allocate
     coa_headers = coa_df.columns
     all_values = coa_headers.tolist()
-    
+    #print(all_values)
     # Remove any leading and trailing blank spaces.
     df.columns = df.columns.str.strip()
     # Create a list of the allocations file headers.    
@@ -340,7 +350,7 @@ def main():
             sv_percent = emp_alloc_dict[pid]['SV']
             nyc_percent = emp_alloc_dict[pid]['NYC']
             pdx_percent = emp_alloc_dict[pid]['PDX']
-            print(hq_percent, nest_percent, sf_percent,nyc_percent)
+            #print(hq_percent, nest_percent, sf_percent,nyc_percent)
 
         # Iterate through all locations.  This calculates the allocations, and creates a line in the dataframe for each location.
         # 
@@ -387,37 +397,100 @@ def main():
                                                                         'NULL', 'NULL', company_code + '- Allocations - PPE ' + str(row['PERIOD ENDING DATE'])]
                     elif (dept in all_alloc_depts) and (cc == 'ML7'):
                         #print("Dept Hit")
+                        
+                        #Reference
+                        #dept_dict_alloc_values = {'Receptionist HQ' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
+                        #             'Medical Records' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}, 
+                        #             'Call Center' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}, 
+                        #             'Financial Counselor' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
+                        #             'Clinical Operations' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0},
+                        #             'Revenue Cycle' : {'SFM MSO' : 0, 'Nest' : 0, 'SF' : 0, 'OAK' : 0, 'SV' : 0, 'NYC' : 0, 'PDX' : 0}
+                        #             }
+                        # Set dept_dict_aggregate_value = {'Receptionist HQ': 0, 'Medical Records': 0, 'Call Center': 0, 'Financial Counselor': 0, 'Clinical Operations': 0, 'Revenue Cycle': 0}
+                        # Assign this row's value to agg_v
+                        agg_v = row[v]
+                        print(agg_v)
+                        #print(dept_dict_aggregate_value[dept])
+                        '''
                         df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[hc][str(row['Office Reporting Location'])], row['PERIOD ENDING DATE'], row['PERIOD ENDING DATE'], ' ', 'G/L Account', \
                                                                         str(coa_dict[row['Sub Department']][v]), ' ', company_code + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
                                                                         ' ', row[v], row['Office Reporting Location'], str(row['Department Code']).zfill(4), \
                                                                         'NULL', 'NULL', company_code + '- Allocations - PPE ' + str(row['PERIOD ENDING DATE'])]
-                        for l in all_locations:
-                            if l == 'SFM MSO':
-                                pct = hq_percent
-                            elif l == 'Nest':
-                                pct = nest_percent
-                            elif l == 'SF':
-                                pct = sf_percent
-                            elif l == 'OAK':
-                                pct = oak_percent
-                            elif l == 'SV':
-                                pct = sv_percent
-                            elif l == 'NYC':
-                                pct = nyc_percent
-                            elif l == 'PDX':
-                                pct = pdx_percent
+                        '''
+                        
                             
+                            #if pct != 0.0:
+                            #    this_alloc_value = agg_v * pct
+                            #    print(this_alloc_value)
+                            #    dept_dict_alloc_values[dept][l] = dept_dict_alloc_values[dept][l] + this_alloc_value
+                         
+                        # Increment the aggregate value by this row's value
+                        dept_dict_aggregate_value[dept] = dept_dict_aggregate_value[dept] + agg_v
+                        '''  
                             if pct != 0.0:
                                 allocated_value = row[v]*pct
                                 df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code][l], row['PERIOD ENDING DATE'], row['PERIOD ENDING DATE'], ' ', 'G/L Account', \
                                                                         coa_dict[row['Sub Department']][v], ' ', company_code + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
                                                                         allocated_value , ' ', l, str(row['Department Code']).zfill(4), \
-                                                                        'NULL', 'NULL', company_code + '- Allocations - PPE ' + str(row['PERIOD ENDING DATE'])]
+                                                                        'NULL', 'NULL', company_code + '- Allocations - PPE ' + str(row['PERIOD ENDING DATE'])]T
+                        '''
             else:
                 missing_headers.append(v)
     mh = set(missing_headers)
     print (" The following headers were missing from the Input file")
     print(mh)
+
+    #######
+    # Generate the Dept File
+    
+
+
+    for d, v in dept_dict_aggregate_value.items():
+        hq_percent = dept_alloc_dict[d]['SFM MSO']
+        nest_percent = dept_alloc_dict[d]['Nest']
+        sf_percent = dept_alloc_dict[d]['SF']
+        oak_percent = dept_alloc_dict[d]['OAK']
+        sv_percent = dept_alloc_dict[d]['SV']
+        nyc_percent = dept_alloc_dict[d]['NYC']
+        pdx_percent = dept_alloc_dict[d]['PDX']
+
+        for l in all_locations:
+            if l == 'SFM MSO':
+                pct = hq_percent
+            elif l == 'Nest':
+                pct = nest_percent
+            elif l == 'SF':
+                pct = sf_percent
+            elif l == 'OAK':
+                pct = oak_percent
+            elif l == 'SV':
+                pct = sv_percent
+            elif l == 'NYC':
+                pct = nyc_percent
+            elif l == 'PDX':
+                pct = pdx_percent
+            
+            dept_dict_alloc_values[d][l] = v*pct
+            #print(v)
+            #print(dept_dict_alloc_values[d][l])
+    
+    for outer_key, inner_dict in dept_dict_alloc_values.items():
+        df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, 'NULL ', 'NULL', 'NULL', ' ', 'G/L Account', 'NULL', ' ', company_code + '-' + outer_key + '-' + 'v', ' ', dept_dict_aggregate_value[outer_key], 'NULL', 'NULL', 'NULL', 'NULL', 'NULL']
+
+
+        print(f" {outer_key} aggregate sum is {dept_dict_aggregate_value[outer_key]}")
+
+
+        for inner_key, inner_value in inner_dict.items():
+            
+            df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, 'NULL ', 'NULL', 'NULL', ' ', 'G/L Account', \
+                                                                        'NULL', ' ', company_code + '-' + outer_key + '-' + 'v', \
+                                                                        inner_value, ' ', 'NULL', 'NULL', \
+                                                                        'NULL', 'NULL', 'NULL']
+            print(f"{outer_key} sum for {inner_key} is {inner_value}")
+    
+    
+
 
     #print(df_dept_allocations)
     # Start the "Save As" dialog box for the Employee Allocations.
