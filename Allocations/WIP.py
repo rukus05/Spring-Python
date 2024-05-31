@@ -15,6 +15,8 @@ from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
 from tkinter.filedialog import asksaveasfile
 from copy import deepcopy
+from zpack.fns import FilePrompt
+from zpack.fns import save_dataframe
 
 
 
@@ -68,7 +70,15 @@ def main():
     coa_df = coa_df.reset_index()
     coa_dict = chart_of_accounts(coa_df)
 
-    #print(coa_dict)
+    # coa_dict has the following format:
+    #{'ASC': {'index': 0, 'SUB_DEPARTMENT': 'ASC', 'Salaries and Wages': 51111, 'OT': 51121, 'ELC': 65200, 'ER Taxes': 51141, '401K-ER Match': 51161, 'Medical Waiver': 51171, 'MEDICAL': 51171, 'DENTAL': 51171, 'VISION': 51171, 'LIFE': 51171, 'Other Benefits': 51171}, 
+    # 'Clinical': {'index': 1, 'SUB_DEPARTMENT': 'Clinical', 'Salaries and Wages': 51110, 'OT': 51120, 'ELC': 65200, 'ER Taxes': 51140, '401K-ER Match': 51160, 'Medical Waiver': 51170, 'MEDICAL': 51170, 'DENTAL': 51170, 'VISION': 51170, 'LIFE': 51170, 'Other Benefits': 51170}, 
+    # 'HQ': {'index': 2, 'SUB_DEPARTMENT': 'HQ', 'Salaries and Wages': 61110, 'OT': 61120, 'ELC': 65200, 'ER Taxes': 61140, '401K-ER Match': 61170, 'Medical Waiver': 61180, 'MEDICAL': 61180, 'DENTAL': 61180, 'VISION': 61180, 'LIFE': 61180, 'Other Benefits': 61180}, 
+    # 'MD': {'index': 3, 'SUB_DEPARTMENT': 'MD', 'Salaries and Wages': 51113, 'OT': 51123, 'ELC': 65200, 'ER Taxes': 51143, '401K-ER Match': 51163, 'Medical Waiver': 51173, 'MEDICAL': 51173, 'DENTAL': 51173, 'VISION': 51173, 'LIFE': 51173, 'Other Benefits': 51173}, 
+    # 'Lab': {'index': 4, 'SUB_DEPARTMENT': 'Lab', 'Salaries and Wages': 51112, 'OT': 51122, 'ELC': 65200, 'ER Taxes': 51142, '401K-ER Match': 51162, 'Medical Waiver': 51172, 'MEDICAL': 51172, 'DENTAL': 51172, 'VISION': 51172, 'LIFE': 51172, 'Other Benefits': 51172}, 
+    # 'Operating': {'index': 5, 'SUB_DEPARTMENT': 'Operating', 'Salaries and Wages': 61110, 'OT': 61120, 'ELC': 65200, 'ER Taxes': 61140, '401K-ER Match': 61170, 'Medical Waiver': 61180, 'MEDICAL': 61180, 'DENTAL': 61180, 'VISION': 61180, 'LIFE': 61180, 'Other Benefits': 61180}}
+
+    
 
     # Prompt user for Input file
     print("Select the Input File which your running Payroll Allocations for:")
@@ -82,6 +92,7 @@ def main():
     company_code = str(df.at[0,'COMPANY CODE'])
     ped = df.at[0, 'PERIOD ENDING DATE']
     payd = df.at[0, 'PAY DATE']
+    df['ADP Department Code'] = df['ADP Department Code'].astype(int)
     
     # Create new Dataframe for the Employee Allocations Output.
     df_emp_allocations = pd.DataFrame(columns=['Entity Template', 'Entity', 'PostDate', 'DocDate', 'DocNo','AcctType', 'AcctNo', 'AcctName', 'Description', \
@@ -162,6 +173,9 @@ def main():
     # Create a dict to associate Depts with Sub Depts
     dict_dept_to_subdept = {dept : '' for dept in all_alloc_depts}
     
+    # Create a dict for Dept to ADP Code mappings
+    dict_dept_to_ADPCode = {dept : '' for dept in all_alloc_depts}
+
     # Create a list of the allocations file headers.  
     alloc_headers = df.columns
     alloc_headers_values = alloc_headers.tolist()
@@ -172,7 +186,7 @@ def main():
     
     for index, row in df.iterrows():
         pid = str(row['POSITION ID'])
-        #pid = pid.rstrip('.0')
+        
         
         dept = row['Department']
         cc = row['COMPANY CODE']
@@ -202,7 +216,6 @@ def main():
         # If not, use the % as defined in the dictionary when create_deptalloc_dict is called.
         # This process repeats for other depts.  If we don't match any of these, use the emp allocation; last else statement below.
         if re.search('Receptionist HQ*', str(dept), re.IGNORECASE):
-            #dept == 'Receptionist HQ':
             if pid in emp_alloc_dict:
                 hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
@@ -221,7 +234,6 @@ def main():
                 pdx_percent = dept_alloc_dict[dept]['PDX']
         
         elif re.search('Medical Records*', str(dept), re.IGNORECASE):
-             #dept == 'Medical Records':
             if pid in emp_alloc_dict:
                 hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
@@ -239,10 +251,8 @@ def main():
                 nyc_percent = dept_alloc_dict[dept]['NYC']
                 pdx_percent = dept_alloc_dict[dept]['PDX']
         elif re.search('Call Center*', str(dept), re.IGNORECASE):
-        #if (row['Department Long Descr'] == 'Call Center '):
             # Accommodate Allocations file that has Call Center as lower case.
             dept = 'Call Center'
-            #print(dept)
             if pid in emp_alloc_dict:
                 hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
@@ -260,9 +270,7 @@ def main():
                 nyc_percent = dept_alloc_dict[dept]['NYC']
                 pdx_percent = dept_alloc_dict[dept]['PDX']
 
-                
         elif re.search('Financial Counselor*', str(dept), re.IGNORECASE):
-            #dept == 'Financial Counselor':
             if pid in emp_alloc_dict:
                 hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
@@ -280,7 +288,6 @@ def main():
                 nyc_percent = dept_alloc_dict[dept]['NYC']
                 pdx_percent = dept_alloc_dict[dept]['PDX']
         elif re.search('Clincal Operations*', str(dept), re.IGNORECASE):
-            # dept == 'Clinical Operations':
             if pid in emp_alloc_dict:
                 hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
@@ -298,7 +305,6 @@ def main():
                 nyc_percent = dept_alloc_dict[dept]['NYC']
                 pdx_percent = dept_alloc_dict[dept]['PDX']
         elif re.search('Revenue Cycle*', str(dept), re.IGNORECASE):
-            # dept == 'Revenue Cycle':
             if pid in emp_alloc_dict:
                 hq_percent = emp_alloc_dict[pid]['SFM MSO']
                 nest_percent = emp_alloc_dict[pid]['Nest']
@@ -323,10 +329,7 @@ def main():
             sv_percent = emp_alloc_dict[pid]['SV']
             nyc_percent = emp_alloc_dict[pid]['NYC']
             pdx_percent = emp_alloc_dict[pid]['PDX']
-            #print(hq_percent, nest_percent, sf_percent,nyc_percent)
-
-        # Iterate through all locations.  This calculates the allocations, and creates a line in the dataframe for each location.
-        # 
+        
         #  df_allocations = pd.DataFrame(columns=['Entity', 'PostDate', 'DocDate', 'AcctType', 'AcctNo', 'AcctName', 'Description', \
         #                                        'DebitAmt', 'CreditAmt', 'Loc', 'Dept','Provider', 'Service Line', 'Comments'])
 
@@ -400,6 +403,7 @@ def main():
                         agg_v = row[v]
                         dict_usefor_sumV[dept][v] = dict_usefor_sumV[dept][v] + agg_v
                         dict_dept_to_subdept[dept] = row['Sub Department']
+                        dict_dept_to_ADPCode[dept] = row['ADP Department Code']
 
             else:
                 missing_headers.append(v)
@@ -441,12 +445,12 @@ def main():
     for outer_key, d_a_lpct in dict_usefor_pctV.items():
         for vs, locpcts in d_a_lpct.items():
             
-            df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, 'NULL' , ped, payd, ' ', 'G/L Account', 'NULL', ' ', company_code + '-' + outer_key + '-' + vs, ' ', \
-                                                                       dict_usefor_sumV[outer_key][vs], 'NULL', 'NULL', 'NULL', 'NULL', 'NULL']
+            df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code]['SFM MSO'] , ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs, ' ', \
+                                                                       dict_usefor_sumV[outer_key][vs], 'SFM MSO', str(deptcodetosub_dict[dict_dept_to_ADPCode[outer_key]]).zfill(4), 'NULL', 'NULL', company_code + '- Payroll Allocations - PPE ' + ped]
             
             for locs, pctvs in locpcts.items():
                      df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code][locs], ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs, \
-                                                                        dict_usefor_pctV[outer_key][vs][locs], ' ', locs, 'NULL', 'NULL', 'NULL', 'NULL']
+                                                                        dict_usefor_pctV[outer_key][vs][locs], ' ', locs, str(deptcodetosub_dict[dict_dept_to_ADPCode[outer_key]]).zfill(4), 'NULL', 'NULL', company_code + '- Payroll Allocations - PPE ' + ped]
 
 
 
@@ -479,29 +483,6 @@ def main():
     runningtime = time.time() - start
     print("The execution time is:", runningtime)
 
-
-def FilePrompt():
-    root = tk.Tk()
-    root.title('Tkinter Open File Dialog')
-    root.resizable(False, False)
-    root.geometry('300x150')
-    root.withdraw()
-
-
-    filename = fd.askopenfilename()
-
-    return filename
-    
-def save_dataframe(df, sl):
-    file_path = fd.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")])
-    
-    if file_path:
-        try:
-            # Assuming df is your DataFrame
-            df.to_excel(file_path, index=False)
-            sl.config(text=f"Saved as {file_path}")
-        except Exception as e:
-            sl.config(text=f"Error: {str(e)}")
 
 
 if __name__ == "__main__":
