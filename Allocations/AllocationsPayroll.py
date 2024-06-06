@@ -69,6 +69,7 @@ def main():
     coa_df = pd.read_excel(coaf)
     coa_df = coa_df.reset_index()
     coa_dict = chart_of_accounts(coa_df)
+
     # coa_dict has the following format:
     #{'ASC': {'index': 0, 'SUB_DEPARTMENT': 'ASC', 'Salaries and Wages': 51111, 'OT': 51121, 'ELC': 65200, 'ER Taxes': 51141, '401K-ER Match': 51161, 'Medical Waiver': 51171, 'MEDICAL': 51171, 'DENTAL': 51171, 'VISION': 51171, 'LIFE': 51171, 'Other Benefits': 51171}, 
     # 'Clinical': {'index': 1, 'SUB_DEPARTMENT': 'Clinical', 'Salaries and Wages': 51110, 'OT': 51120, 'ELC': 65200, 'ER Taxes': 51140, '401K-ER Match': 51160, 'Medical Waiver': 51170, 'MEDICAL': 51170, 'DENTAL': 51170, 'VISION': 51170, 'LIFE': 51170, 'Other Benefits': 51170}, 
@@ -76,6 +77,8 @@ def main():
     # 'MD': {'index': 3, 'SUB_DEPARTMENT': 'MD', 'Salaries and Wages': 51113, 'OT': 51123, 'ELC': 65200, 'ER Taxes': 51143, '401K-ER Match': 51163, 'Medical Waiver': 51173, 'MEDICAL': 51173, 'DENTAL': 51173, 'VISION': 51173, 'LIFE': 51173, 'Other Benefits': 51173}, 
     # 'Lab': {'index': 4, 'SUB_DEPARTMENT': 'Lab', 'Salaries and Wages': 51112, 'OT': 51122, 'ELC': 65200, 'ER Taxes': 51142, '401K-ER Match': 51162, 'Medical Waiver': 51172, 'MEDICAL': 51172, 'DENTAL': 51172, 'VISION': 51172, 'LIFE': 51172, 'Other Benefits': 51172}, 
     # 'Operating': {'index': 5, 'SUB_DEPARTMENT': 'Operating', 'Salaries and Wages': 61110, 'OT': 61120, 'ELC': 65200, 'ER Taxes': 61140, '401K-ER Match': 61170, 'Medical Waiver': 61180, 'MEDICAL': 61180, 'DENTAL': 61180, 'VISION': 61180, 'LIFE': 61180, 'Other Benefits': 61180}}
+
+    
 
     # Prompt user for Input file
     print("Select the Input File which your running Payroll Allocations for:")
@@ -85,7 +88,7 @@ def main():
 
     # Fill in blank cells with 0
     df = df.fillna(0)
-    # Capture the Company Code, Period Ending Date, and Pay Date of the input file.
+    # Obtain the Company Code, Period Ending Date, and Pay Date of the input file.
     company_code = str(df.at[0,'COMPANY CODE'])
     ped = df.at[0, 'PERIOD ENDING DATE']
     payd = df.at[0, 'PAY DATE']
@@ -179,9 +182,12 @@ def main():
 
     # Create a set to capture Allocation headers that are not in the input file
     missing_headers = []
+    # Initialize agg_v to zero.  Used to check if Dept allocations are used for this file.
+    agg_v = 0
 
     
     for index, row in df.iterrows():
+        
         pid = str(row['POSITION ID'])
         
         
@@ -369,10 +375,36 @@ def main():
                                                                         allocated_value , ' ', l, '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
                                                                         'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
                     elif (dept in all_alloc_depts) and (cc == 'ML7'):
-                        # For Dept Allocations (only occurs with ML7)
+                        '''
+                        df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[hc][str(row['Office Reporting Location'])], row['PERIOD ENDING DATE'], row['PAY DATE'], ' ', 'G/L Account', \
+                                                                        str(coa_dict[row['Sub Department']][v]), ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
+                                                                        ' ', row[v], row['Office Reporting Location'], '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
+                                                                        'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
+                        for l in all_locations:
+                            if l == 'SFM MSO':
+                                pct = hq_percent
+                            elif l == 'Nest':
+                                pct = nest_percent
+                            elif l == 'SF':
+                                pct = sf_percent
+                            elif l == 'OAK':
+                                pct = oak_percent
+                            elif l == 'SV':
+                                pct = sv_percent
+                            elif l == 'NYC':
+                                pct = nyc_percent
+                            elif l == 'PDX':
+                                pct = pdx_percent
+                            
+                            if pct != 0.0:
+                                allocated_value = row[v]*pct
+                                df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[str(row['COMPANY CODE'])][l], row['PERIOD ENDING DATE'], row['PAY DATE'], ' ', 'G/L Account', \
+                                                                        coa_dict[row['Sub Department']][v], ' ', str(row['COMPANY CODE']) + '-' + str(row['PERIOD ENDING DATE']) + '-' + dept + '-' + v + '-' + row['Sub Department'] + '-' + row['Office Reporting Location'] + '-' + pid, \
+                                                                        allocated_value , ' ', l, '0' + str(deptcodetosub_dict[row['ADP Department Code']]), \
+                                                                        'NULL', 'NULL', str(row['COMPANY CODE']) + '- Allocations - PPE ' + row['PERIOD ENDING DATE']]
+                        '''
                         agg_v = row[v]
                         dict_usefor_sumV[dept][v] = dict_usefor_sumV[dept][v] + agg_v
-                        # Capture the Sub Dept and ADP Dept codes; which are luckily always the same for a given dept
                         dict_dept_to_subdept[dept] = row['Sub Department']
                         dict_dept_to_ADPCode[dept] = row['ADP Department Code']
 
@@ -382,46 +414,47 @@ def main():
     print (" The following headers were missing from the Input file")
     print(mh)
     #print(dict_usefor_sumV)
+    if agg_v != 0:
+        for d, v in dict_usefor_sumV.items():
+            hq_percent = dept_alloc_dict[d]['SFM MSO']
+            nest_percent = dept_alloc_dict[d]['Nest']
+            sf_percent = dept_alloc_dict[d]['SF']
+            oak_percent = dept_alloc_dict[d]['OAK']
+            sv_percent = dept_alloc_dict[d]['SV']
+            nyc_percent = dept_alloc_dict[d]['NYC']
+            pdx_percent = dept_alloc_dict[d]['PDX']
 
-    for d, v in dict_usefor_sumV.items():
-        hq_percent = dept_alloc_dict[d]['SFM MSO']
-        nest_percent = dept_alloc_dict[d]['Nest']
-        sf_percent = dept_alloc_dict[d]['SF']
-        oak_percent = dept_alloc_dict[d]['OAK']
-        sv_percent = dept_alloc_dict[d]['SV']
-        nyc_percent = dept_alloc_dict[d]['NYC']
-        pdx_percent = dept_alloc_dict[d]['PDX']
+            for vals in all_values[2:]:
+                for l in all_locations:
+                    if l == 'SFM MSO':
+                        pct = hq_percent
+                    elif l == 'Nest':
+                        pct = nest_percent
+                    elif l == 'SF':
+                        pct = sf_percent
+                    elif l == 'OAK':
+                        pct = oak_percent
+                    elif l == 'SV':
+                        pct = sv_percent
+                    elif l == 'NYC':
+                        pct = nyc_percent
+                    elif l == 'PDX':
+                        pct = pdx_percent
+                    
+                    dict_usefor_pctV[d][vals][l] = dict_usefor_sumV[d][vals]*pct
 
-        for vals in all_values[2:]:
-            for l in all_locations:
-                if l == 'SFM MSO':
-                    pct = hq_percent
-                elif l == 'Nest':
-                    pct = nest_percent
-                elif l == 'SF':
-                    pct = sf_percent
-                elif l == 'OAK':
-                    pct = oak_percent
-                elif l == 'SV':
-                    pct = sv_percent
-                elif l == 'NYC':
-                    pct = nyc_percent
-                elif l == 'PDX':
-                    pct = pdx_percent
+        #print(dict_usefor_pctV)
+
+        for outer_key, d_a_lpct in dict_usefor_pctV.items():
+            print(outer_key)
+            for vs, locpcts in d_a_lpct.items():
                 
-                dict_usefor_pctV[d][vals][l] = dict_usefor_sumV[d][vals]*pct
-
-    #print(dict_usefor_pctV)
-
-    for outer_key, d_a_lpct in dict_usefor_pctV.items():
-        for vs, locpcts in d_a_lpct.items():
-            # Create a line for the aggregate sum
-            df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code]['SFM MSO'] , ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs, ' ', \
-                                                                       dict_usefor_sumV[outer_key][vs], 'SFM MSO', str(deptcodetosub_dict[dict_dept_to_ADPCode[outer_key]]).zfill(4), 'NULL', 'NULL', company_code + '- Payroll Allocations - PPE ' + ped]
-            # Create lines for the allocated amounts for all the alloc_values 
-            for locs, pctvs in locpcts.items():
-                     df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code][locs], ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs, \
-                                                                        dict_usefor_pctV[outer_key][vs][locs], ' ', locs, str(deptcodetosub_dict[dict_dept_to_ADPCode[outer_key]]).zfill(4), 'NULL', 'NULL', company_code + '- Payroll Allocations - PPE ' + ped]
+                df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code]['SFM MSO'] , ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + ped + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs, ' ', \
+                                                                        dict_usefor_sumV[outer_key][vs], 'SFM MSO', str(deptcodetosub_dict[dict_dept_to_ADPCode[outer_key]]).zfill(4), 'NULL', 'NULL', company_code + '- Payroll Allocations - PPE ' + ped]
+                
+                for locs, pctvs in locpcts.items():
+                        df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code][locs], ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + ped + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs, \
+                                                                            dict_usefor_pctV[outer_key][vs][locs], ' ', locs, str(deptcodetosub_dict[dict_dept_to_ADPCode[outer_key]]).zfill(4), 'NULL', 'NULL', company_code + '- Payroll Allocations - PPE ' + ped]
 
 
 
@@ -430,6 +463,7 @@ def main():
 
     #print(df_dept_allocations)
     # Start the "Save As" dialog box for the Employee Allocations.
+    runningtime = time.time() - start
     print("Save the Employee Allocations Output.")                            
     app = tk.Tk()
     app.title("Save File As")
@@ -451,7 +485,7 @@ def main():
         save_button.pack(padx=20, pady=10)
 
     # Calculate the execution time.
-    runningtime = time.time() - start
+    
     print("The execution time is:", runningtime)
 
 
