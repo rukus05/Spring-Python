@@ -407,6 +407,8 @@ def main():
                         dict_usefor_sumV[dept][v] = dict_usefor_sumV[dept][v] + agg_v
                         dict_dept_to_subdept[dept] = row['Sub Department']
                         dict_dept_to_ADPCode[dept] = row['ADP Department Code']
+                        off_report_loc = row['Office Reporting Location']
+
 
             else:
                 missing_headers.append(v)
@@ -449,11 +451,11 @@ def main():
             print(outer_key)
             for vs, locpcts in d_a_lpct.items():
                 
-                df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code]['SFM MSO'] , ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + ped + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs, ' ', \
+                df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code]['SFM MSO'] , ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + ped + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs + '-' + off_report_loc, ' ', \
                                                                         dict_usefor_sumV[outer_key][vs], 'SFM MSO', str(deptcodetosub_dict[dict_dept_to_ADPCode[outer_key]]).zfill(4), 'NULL', 'NULL', company_code + '- Payroll Allocations - PPE ' + ped]
                 
                 for locs, pctvs in locpcts.items():
-                        df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code][locs], ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + ped + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs, \
+                        df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code][locs], ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + ped + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs + '-' + off_report_loc, \
                                                                             dict_usefor_pctV[outer_key][vs][locs], ' ', locs, str(deptcodetosub_dict[dict_dept_to_ADPCode[outer_key]]).zfill(4), 'NULL', 'NULL', company_code + '- Payroll Allocations - PPE ' + ped]
 
 
