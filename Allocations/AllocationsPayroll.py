@@ -448,7 +448,7 @@ def main():
         #print(dict_usefor_pctV)
 
         for outer_key, d_a_lpct in dict_usefor_pctV.items():
-            print(outer_key)
+            #print(outer_key)
             for vs, locpcts in d_a_lpct.items():
                 
                 df_dept_allocations.loc[len(df_dept_allocations.index)] = [ent_template, entitytagging_dict[company_code]['SFM MSO'] , ped, payd, ' ', 'G/L Account', coa_dict[dict_dept_to_subdept[outer_key]][vs], ' ', company_code + '-' + ped + '-' + outer_key + '-' + dict_dept_to_subdept[outer_key] + '-' + vs + '-' + off_report_loc, ' ', \
