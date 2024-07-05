@@ -1,3 +1,3 @@
 @echo off
-python payroll.py
+py AllocationsPayroll.py
 pause
