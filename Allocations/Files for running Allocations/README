@@ -1,0 +1,10 @@
+The files in this directory are used to generate the payroll allocation entries for Spring.
+They are:
+- Chart of Accounts files
+- Dept to Sub dept mapping file
+- Emp allocations file
+- Entity Tagging File
+
+
+When you run AllocationsPayroll.py, it asks for these files as input.
+Having these files separated from the program allows for modular changes by Spring Staff, reduces programming admin overhead, reduces overall code.
