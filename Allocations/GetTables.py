@@ -66,7 +66,7 @@ def deptcode_to_subdept(input_df):
 def entity_tagging(input_df):
     entity_tag_dict = {}
     
-
+    
     for index, row in input_df.iterrows():
         entity_tag_dict[row['Company Code']] = {
             'SFM MSO': row['SFM MSO'],
